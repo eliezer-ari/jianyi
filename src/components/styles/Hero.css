@@ -118,7 +118,7 @@
 	flex-direction: column !important;
 	justify-content: flex-start !important;
 	align-items: center !important;
-	overflow: visible !important;
+	overflow-y: visible !important;
 	contain: paint; /* Performance optimization for rendering */
 	will-change: opacity; /* Hint to browser for smoother transitions */
 	backface-visibility: hidden; /* Reduce flickering */
