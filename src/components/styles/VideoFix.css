@@ -1,0 +1,55 @@
+/* Critical video fixes - This file should be imported last in all components using videos */
+
+/* Force video to be visible */
+.video-background,
+.video-background-mobile {
+  position: relative !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  object-fit: cover !important;
+  object-position: center !important; /* Default center position */
+  z-index: -1 !important;
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+/* Right-center positioning class */
+.video-background.right-center,
+.video-background-mobile.right-center {
+  object-position: right center !important;
+}
+
+/* Ensure dark overlay doesn't interfere with video */
+.dark-overlay {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+	background: linear-gradient(to top, rgba(0, 0, 0, 0), #00000000 50%, rgba(0, 0, 0, 0.256) 90%, rgba(0, 0, 0, 0.256)) !important;
+  z-index: -1 !important;
+  pointer-events: none !important;
+}
+
+/* Fix standard container but don't interfere with scrolling */
+.standard-container {
+  position: relative !important;
+  z-index: 1 !important;
+}
+
+/* Bio-specific fixes to ensure scrolling works */
+.bio-container {
+  position: relative !important;
+  z-index: 1 !important;
+  overflow: visible !important;
+  display: block !important;
+}
+
+/* Make sure view reel button is above videos */
+.view-reel-button {
+  position: absolute !important;
+  z-index: 10 !important;
+} 

@@ -1,0 +1,187 @@
+/* Hero.css */
+
+.herocontainer {
+	position: relative;
+	width: 100vw;
+	min-height: 100vh; /* Change to min-height instead of fixed height */
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+	justify-content: flex-start;
+	overflow-y: auto !important; /* Important to override any other styles */
+	background-color: #000; /* Neutral background */
+	height: auto !important;
+}
+
+.section-container {
+	display: flex;
+	flex-direction: column;
+	position: relative;
+	padding: 0;
+	margin: 0;
+	width: 100vw;
+	min-height: 100vh;
+	height: auto !important; /* Use important to override other styles */
+	transition: opacity 0.5s ease; /* Match this to the JS timeout */
+	overflow-y: auto !important;
+	overflow-x: hidden !important;
+}
+
+/* @keyframes slideIn {
+	from {
+		opacity: 0;
+	}
+	to {
+		opacity: 1;
+	}
+}
+
+@keyframes slideOut {
+	from {
+		opacity: 1;
+	}
+	to {
+		opacity: 0;
+	}
+} */
+
+.fade-in {
+	opacity: 1;
+}
+
+.fade-out {
+	opacity: 0;
+}
+
+.herocontainer .navreplacement {
+	display: flex;
+	width: 100vw;
+	height: fit-content;
+	top: 0;
+	position: absolute;
+	z-index: 1000;
+	opacity: 1;
+
+}
+
+/* Override fade transitions for navbar */
+.section-container.fade-out .navreplacement,
+.section-container.fade-in .navreplacement {
+  opacity: 1 !important;
+  transition: none !important;
+}
+
+
+@media screen and (max-width: 960px) {
+	.herocontainer {
+		width: 100vw;
+		/* min-height: calc(
+			var(--vh, 1vh) * 100
+		);  */
+		min-height: 100vh;
+	}
+
+	.section-container {
+		width: 100vw;
+		height: auto;
+	}
+
+	
+}
+
+/* Override fade transitions specifically for navbar */
+.no-fade {
+  opacity: 1 !important; 
+  transition: none !important;
+}
+
+/* This ensures the no-fade rule always takes precedence */
+.section-container.fade-out .no-fade,
+.section-container.fade-in .no-fade {
+  opacity: 1 !important;
+  transition: none !important;
+}
+
+.section-content {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  transition: opacity 0.5s ease;
+}
+
+.content-wrapper {
+	height: auto !important;
+	min-height: auto !important;
+	width: 100%;
+	position: static !important; /* Try changing from relative to static */
+	display: flex !important; /* Change from flex to block */
+	flex-direction: column !important;
+	justify-content: flex-start !important;
+	align-items: center !important;
+	overflow: visible !important;
+}
+
+/* Add this at the bottom of Hero.css to override page-container styles */
+.page-container {
+    height: auto !important;
+    min-height: 100vh !important;
+    overflow-y: visible !important;
+}
+
+.footer-container {
+	position: relative;
+	width: 100%;
+	background-color: rgb(0, 0, 0);
+	display: flex;
+	flex-direction: row-reverse;
+	justify-content: center;
+	align-items: center;
+	padding: 0 2rem;
+	z-index: 1000;
+}
+
+.footer-content {
+	display: flex;
+	flex-direction: row;
+	justify-content: center;
+	align-items: center;
+	gap: 2rem;
+	margin: 2rem 0;
+}
+
+.footer-logo-insta {
+	width: 50px;
+	height: 50px;
+	margin: -0.5rem;
+}
+
+.footer-logo-vimeo {
+	width: 34px;
+	height: 34px;
+	filter: invert(1);
+}
+
+.arrow-nav-btn {
+	background: none;
+	border: none;
+	cursor: pointer;
+	color: white;
+}
+
+.footer-logo-text {
+	font-family: var(--font-standard);
+	font-size: 18px;
+	color: white;
+	font-size: 2.7rem;
+	font-family: var(--font-standard);
+	text-transform: uppercase;
+	letter-spacing: 0.5rem;
+	font-weight: 100;
+	width: auto;
+	max-width: 100%;
+	display: flex;
+	cursor: pointer;
+	filter: none;
+	transform: translateY(-0.2rem);
+	transition: all 0.25s ease;
+}

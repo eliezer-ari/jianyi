@@ -1,0 +1,78 @@
+.website-parent {
+	display: flex;
+	position: absolute;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	width: 100vw;
+	height: 100%;
+	background: radial-gradient(
+			circle at 20% 30%,
+			rgba(0, 255, 208, 0.4) 20%,
+			transparent 60%
+		),
+		radial-gradient(
+			circle at 80% 70%,
+			rgba(166, 0, 255, 0.4) 20%,
+			transparent 60%
+		),
+		radial-gradient(
+			circle at 50% 50%,
+			rgba(255, 0, 238, 0.6) 20%,
+			transparent 60%
+		);
+	background-size: 200% 200%; /* Large size to allow movement */
+	background-position: 20% 30%, 80% 70%, 50% 50%; /* Starting positions */
+	animation: floatingColors 5s ease-in-out infinite alternate;
+}
+
+.sites-container {
+	display: flex;
+	flex-direction: row;
+	justify-content: center;
+	align-items: center;
+	max-width: 90vw;
+	gap: 3rem;
+}
+
+.sitevideo {
+	display: flex;
+	position: relative;
+	width: 25vw;
+	height: auto;
+	transition: transform 0.3s ease-in-out;
+	box-shadow: 0 1px 1px hsl(0deg 0% 0% / 8%), 0 2px 2px hsl(0deg 0% 0% / 8%),
+		0 4px 4px hsl(0deg 0% 0% / 8%), 0 8px 8px hsl(0deg 0% 0% / 8%),
+		0 16px 16px hsl(0deg 0% 0% / 8%);
+	z-index: 9001;
+}
+
+.sitevideo:hover {
+	transform: scale(1.05);
+}
+
+.website-copy {
+	text-align: center;
+	padding-top: 2rem;
+	max-width: 80vw;
+}
+
+@media (max-width: 960px) {
+	.sites-container {
+		display: flex;
+		flex-direction: column;
+		max-width: 90vw;
+		gap: 2rem;
+	}
+	.sitevideo {
+		width: 50vw;
+	}
+
+	.website-copy {
+		font-size: 0.8rem;
+	}
+
+	.sitevideo:hover {
+		transform: none;
+	}
+}

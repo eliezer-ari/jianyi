@@ -1,0 +1,11 @@
+/* Add these to your global CSS */
+html, body, #root {
+  height: auto;
+  min-height: 100vh;
+}
+
+body {
+  overflow-y: auto;
+}
+
+        

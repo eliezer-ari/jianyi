@@ -1,0 +1,325 @@
+.work-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1500;
+  animation: fadeIn 0.3s ease forwards;    
+}
+
+.work-modal-links-container {
+  /* No background, just a container for the links */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.work-modal-links {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  text-align: center;
+}
+
+.work-modal-links li {
+  margin-bottom: 30px;
+  width: fit-content;
+  pointer-events: auto;
+}
+
+.work-modal-link {
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  color: #fff;
+  padding: 5px 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.5rem;
+  position: relative;
+  text-decoration: none;
+  transition: color 0.3s;
+  font-family: var(--font-standard);
+  line-height: 1.3;
+  pointer-events: auto;
+}
+
+@media (max-width: 768px) {
+  .work-modal-link {
+    font-size: 14px;
+padding: 0 1.8rem;  }
+}
+
+.work-modal-link:hover {
+  color: #ccc;
+}
+
+.work-modal-link::after {
+  content: '';
+  position: absolute;
+  width: 0;
+  height: 1px;
+  bottom: 0;
+  left: 50%;
+  background-color: #fff;
+  transition: width 0.3s ease, left 0.3s ease;
+}
+
+.work-modal-link:hover::after {
+  width: 100%;
+  left: 0;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+.selected-work-modal {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.project-carousel {
+  position: relative;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+@media (min-width: 768px) {
+  .project-carousel {
+    flex-direction: row;
+  }
+}
+
+.project-details {
+  padding: 0 20px 20px;
+  flex: 1;
+}
+
+@media (min-width: 768px) {
+  .project-details {
+    width: 35%;
+    padding: 0 30px 0 0;
+  }
+}
+
+.project-title {
+  font-size: 1.8rem;
+  margin: 0 0 10px;
+  font-weight: 500;
+  color: #000;
+}
+
+
+.project-role {
+  font-size: 1rem;
+  color: #666;
+  margin-bottom: 15px;
+}
+
+.project-description {
+  font-size: 1rem;
+  line-height: 1.6;
+  margin: 0;
+}
+
+.project-media {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.video-wrapper {
+  position: relative;
+  width: 100%;
+  padding-bottom: 56.25%; /* 16:9 aspect ratio */
+  overflow: hidden;
+}
+
+.video-wrapper iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.carousel-nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(0, 0, 0, 0.2);
+  border: none;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  cursor: pointer;
+  z-index: 10;
+  transition: background 0.2s;
+}
+
+.carousel-nav:hover {
+  background: rgba(0, 0, 0, 0.4);
+}
+
+.carousel-nav.prev {
+  left: 10px;
+}
+
+.carousel-nav.next {
+  right: 10px;
+}
+
+.project-navigation {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.project-indicators {
+  display: flex;
+  gap: 8px;
+}
+
+.indicator {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  border: none;
+  background-color: #ccc;
+  cursor: pointer;
+  padding: 0;
+}
+
+.indicator.active {
+  background-color: #000;
+}
+
+@media (max-height: 950px) {
+  .work-modal-links li {
+    margin-bottom: 20px;
+  }
+  
+  .work-modal-link {
+    font-size: 20px;
+    padding: 4px 8px;
+  }
+  
+  .project-carousel {
+    max-height: 80vh;
+  }
+  
+  .project-details {
+    padding: 0 15px 15px;
+  }
+  
+  .project-title {
+    font-size: 1.5rem;
+    margin-bottom: 8px;
+  }
+  
+  .project-role {
+    font-size: 0.9rem;
+    margin-bottom: 10px;
+  }
+  
+  .project-description {
+    font-size: 0.9rem;
+    line-height: 1.5;
+  }
+  
+  .carousel-nav {
+    width: 35px;
+    height: 35px;
+  }
+}
+
+@media (max-height: 650px) {
+  
+  .work-modal-links li {
+    margin-bottom: 8px;
+  }
+  
+  .work-modal-link {
+    font-size: 16px;
+    letter-spacing: 0.25rem;
+    padding: 3px 6px;
+  }
+  
+  .project-carousel {
+    max-height: 95vh;
+    flex-direction: column;
+  }
+  
+  .project-details {
+    padding: 0 10px 10px;
+    max-height: 40vh;
+    overflow-y: auto;
+  }
+  
+  .project-title {
+    font-size: 1.1rem;
+    margin-bottom: 5px;
+  }
+  
+  .project-role {
+    font-size: 0.8rem;
+    margin-bottom: 5px;
+  }
+  
+  .project-description {
+    font-size: 0.8rem;
+    line-height: 1.3;
+  }
+  
+  .carousel-nav {
+    width: 28px;
+    height: 28px;
+  }
+  
+  .indicator {
+    width: 6px;
+    height: 6px;
+  }
+  
+  .project-navigation {
+    margin-top: 10px;
+  }
+  
+  .project-indicators {
+    gap: 5px;
+  }
+}
+

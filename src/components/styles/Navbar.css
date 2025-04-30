@@ -1,0 +1,309 @@
+/* Navbar.css */
+
+/* Make Navbar transparent & part of page */
+.navbar {
+	justify-content: center;
+	align-items: flex-start;
+	width: 100vw;
+	height: 100vh;
+	display: flex;
+	flex-direction: column-reverse;
+	background: transparent;
+	justify-content: flex-end;
+	align-items: flex-end;
+	margin-left: auto;
+	margin-right: auto;
+	position: absolute;
+	top: 0;
+	z-index: 1199;
+	transition: 0.3s ease;
+	padding: 0.5rem 0.5rem;
+	background: none;
+	pointer-events: none; /* Ignore all mouse events */
+}
+
+@media (max-width: 768px) {
+	.navbar {
+		padding: 0;
+	}
+}
+
+.logosvg {
+	fill: #ffffff; /* Set the color to white */
+	width: 100%; /* Makes it responsive */
+	height: 1.25rem; /* Keeps aspect ratio */
+}
+
+/* Center the logo instead of pushing it to the left */
+.logospacer {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	position: relative;
+	justify-content: flex-end;	
+	align-items: flex-end;
+	height: 100%;
+	z-index: 1299;
+	width: 100%;
+}
+
+.logocontainer {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	z-index: 1299;
+	transition: transform 0.3s ease, opacity 0.3s ease;
+	position: relative;
+}
+
+.navbarlogoparent {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	z-index: 1000;
+}
+
+/* Logo Styling */
+.navbarlogo {
+	color: var(--inactive-color);
+	font-size: 2.7rem;
+	font-family: var(--font-standard);
+	text-transform: uppercase;
+	letter-spacing: 0.5rem;
+	font-weight: 100;
+	width: auto;
+	max-width: 100%;
+	display: flex;
+	cursor: pointer;
+	filter: none;
+	transform: translateY(-0.2rem);
+	transition: all 0.25s ease;
+	pointer-events: auto; /* Make links clickable */
+	height: 9rem;
+}
+
+.navbarlogo.active {
+	color: var(--active-color);
+}
+
+/* Move menu items to the left */
+.navbarcontainer {
+	display: flex;
+	align-items: center;
+	padding: 0 0.1rem;
+	z-index: 1299;
+	-ms-overflow-style: none; /* IE 10+ */
+	scrollbar-width: none; /* Firefox */
+	transition: transform 0.3s ease, opacity 0.3s ease;
+	position: relative;
+}
+
+.navbarcontainer::-webkit-scrollbar {
+	display: none; /* Hides scrollbar in WebKit browsers */
+}
+
+.navmenu {
+	display: flex;
+	list-style: none;
+	margin: 0;
+	padding: 0;
+	gap: 3rem;
+	z-index: 1299;
+	width: max-content; /* Prevents menu from stretching */
+}
+
+/* Update media query from 768px to 729px as requested */
+@media (max-width: 768px) {
+	.navmenu {
+		display: none;
+	}
+}
+
+.navitem {
+	z-index: 1299;
+}
+
+.navlinks {
+	font-family: Arial, Helvetica, sans-serif;
+	display: flex;
+	cursor: pointer;
+	/* height: 1.75rem; */
+	position: relative;
+	text-decoration: none;
+	transition: all 0.5s ease-out;
+	letter-spacing: 0.5rem;
+	/* border-radius: 5px; */
+	color: var(--inactive-color);
+	/* text-transform: uppercase; */
+	font-weight: 400;
+	font-size: 1.4rem;
+	text-transform: uppercase;
+	/* padding: 0.5rem 0rem; */
+	border: none;
+	background-color: transparent;
+	justify-content: center;
+	align-items: center;
+	padding: 0;
+	z-index: 1299;
+	margin-right: -0.4rem;
+	pointer-events: auto; /* Make links clickable */
+}
+
+.navlinks.active {
+	/* background-color: rgba(255, 255, 255, 0.188); */
+	color: var(--active-color); /* Change color for active link */
+	
+}
+
+.navlinkspecial {
+	display: flex;
+	flex-direction: row;
+	cursor: pointer;
+	/* height: 1.75rem; */
+	position: relative;
+	text-decoration: none;
+	transition: all 0.5s ease-out;
+	color: var(--inactive-color);
+	text-transform: uppercase;
+	font-weight: 600;
+	font-size: 0.7rem;
+	border: none;
+	background-color: transparent;
+	justify-content: center;
+	align-items: center;
+	z-index: 1399;
+	pointer-events: auto; /* Make links clickable */
+}
+
+.navlinkspecial:active {
+	color: var(--active-color);
+}
+
+
+/* Override fade transitions for navbar */
+.section-container.fade-out .navreplacement,
+.section-container.fade-in .navreplacement {
+  opacity: 1 !important;
+  transition: none !important;
+}
+
+/* Ensure all navbar elements stay visible */
+.section-container.fade-out .navreplacement *,
+.section-container.fade-in .navreplacement * {
+  opacity: 1 !important;
+  transition: none !important;
+}
+
+/* Hamburger Menu Styles */
+.hamburger-button {
+	display: none;
+	background: transparent;
+	border: none;
+	cursor: pointer;
+	padding: 2rem;
+	z-index: 1400;
+	pointer-events: auto;
+	margin: 0 -0.4rem;
+}
+
+.hamburger-icon {
+	width: 30px;
+	height: 24px;
+	position: relative;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+}
+
+.hamburger-icon span {
+	display: block;
+	height: 2px;
+	width: 100%;
+	background-color: var(--inactive-color);
+	transition: all 0.3s ease;
+}
+
+.hamburger-icon.open span:nth-child(1) {
+	transform: translateY(11px);
+	background-color: var(--active-color);
+}
+
+.hamburger-icon.open span:nth-child(2) {
+	opacity: 0;
+}
+
+.hamburger-icon.open span:nth-child(3) {
+	transform: translateY(-11px);
+	background-color: var(--active-color);
+}
+
+/* Mobile Menu Styles */
+.mobile-menu {
+	position: fixed;
+	top: 0;
+	right: 0;
+	height: 100vh;
+	width: 100vw;
+	background-color: rgba(0, 0, 0, 0.7);
+	z-index: 1350;
+	opacity: 0;
+	visibility: hidden;
+	transition: opacity 0.3s ease, visibility 0.3s ease;
+	display: flex;
+	flex-direction: column;
+	justify-content: flex-start;
+	align-items: flex-start;
+	padding: 5.5rem 3rem;
+}
+
+.mobile-menu.open {
+	opacity: 1;
+	visibility: visible;
+	transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+
+.mobile-navmenu {
+	list-style: none;
+	padding: 0;
+	margin: 0;
+	width: 100%;
+}
+
+.mobile-navitem {
+	margin-bottom: 2rem;
+}
+
+.mobile-navlinks {
+	font-family: Arial, Helvetica, sans-serif;
+	display: flex;
+	cursor: pointer;
+	position: relative;
+	text-align: left;
+	text-decoration: none;
+	transition: all 0.5s ease-out;
+	letter-spacing: 0.5rem;
+	color: var(--inactive-color);
+	font-weight: 400;
+	font-size: 1.4rem;
+	text-transform: uppercase;
+	border: none;
+	background-color: transparent;
+	padding: 0;
+	pointer-events: auto;
+}
+
+.mobile-navlinks.active {
+	color: var(--active-color);
+}
+
+/* Media query for displaying hamburger menu at 729px */
+@media (max-width: 768px) {
+	.hamburger-button {
+		display: flex;
+	}
+	
+	.mobile-menu {
+		pointer-events: auto;
+	}
+}
