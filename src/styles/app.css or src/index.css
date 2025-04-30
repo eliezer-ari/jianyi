@@ -9,3 +9,13 @@ body {
 }
 
         
+
+/* Add this to your CSS */
+html {
+  overscroll-behavior-y: contain; /* Controls bounce effect on some browsers */
+  background-color: black; /* Ensures any overscroll reveals black */
+}
+
+body {
+  background-color: black; /* Ensures any overscroll reveals black */
+}

@@ -168,7 +168,7 @@ const projects = [
     id: 9,
     title: "Psycho Love / Magic Man",
     type: "video-photo",
-    darkOverlay: false,
+    darkOverlay: true,
     mainPhoto: require("../components/images/psycho_love/main.jpg"),
     mainMobilePhoto: require("../components/images/psycho_love/mainmobile.png"),
     videoUrls: [

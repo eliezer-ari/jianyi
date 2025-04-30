@@ -119,25 +119,79 @@
 	justify-content: flex-start !important;
 	align-items: center !important;
 	overflow: visible !important;
+	contain: paint; /* Performance optimization for rendering */
+	will-change: opacity; /* Hint to browser for smoother transitions */
+	backface-visibility: hidden; /* Reduce flickering */
+	-webkit-backface-visibility: hidden;
+}
+
+/* Force background on text containers */
+.content-wrapper > div,
+.section-content > div {
+    background-color: #000 !important; /* Ensure black background on all content divs */
+    position: relative; /* Create stacking context */
+    z-index: 2; /* Above background */
+}
+
+/* Improve image loading */
+img {
+    opacity: 1;
+    transition: opacity 0.3s ease;
+}
+
+img:not([src]), img[src=""] {
+    opacity: 0;
+}
+
+/* Add a loading layer that fades out when content is ready */
+.section-container::before {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: #000;
+    z-index: 50; /* Above background but below navbar */
+    pointer-events: none;
+    opacity: 1;
+    transition: opacity 0.5s ease;
+    animation: fadeOutLoader 0.5s 0.3s forwards; /* Fade out after a delay */
+}
+
+@keyframes fadeOutLoader {
+    to {
+        opacity: 0;
+    }
 }
 
 /* Add this at the bottom of Hero.css to override page-container styles */
-.page-container {
-    height: auto !important;
-    min-height: 100vh !important;
-    overflow-y: visible !important;
-}
+
 
 .footer-container {
 	position: relative;
 	width: 100%;
-	background-color: rgb(0, 0, 0);
+	background-color: #000;
 	display: flex;
 	flex-direction: row-reverse;
 	justify-content: center;
 	align-items: center;
 	padding: 0 2rem;
-	z-index: 1000;
+	z-index: 5; /* Higher than background images */
+	min-height: 120px;
+	
+	/* Add this gradient mask at the bottom */
+	mask-image: linear-gradient(to bottom, rgba(0,0,0,1) 0%, rgba(0,0,0,1) 100%);
+	-webkit-mask-image: linear-gradient(to bottom, rgba(0,0,0,1) 0%, rgba(0,0,0,1) 100%);
+}
+
+
+/* Also add this to ensure the body background is black */
+html, body {
+	background-color: #000 !important;
+	overscroll-behavior: none; /* Prevent bouncing on Chrome/Firefox */
+	-webkit-overflow-scrolling: auto; /* Change bounce behavior on iOS */
+	height: 100%; /* Full height */
 }
 
 .footer-content {
@@ -147,6 +201,7 @@
 	align-items: center;
 	gap: 2rem;
 	margin: 2rem 0;
+	height: fit-content;
 }
 
 .footer-logo-insta {
@@ -184,4 +239,145 @@
 	filter: none;
 	transform: translateY(-0.2rem);
 	transition: all 0.25s ease;
+}
+
+/* Replace the ::after pseudo-element with this real element */
+.footer-extension {
+  position: absolute;
+  bottom: -500px; /* Even larger extension */
+  left: 0;
+  width: 100%;
+  height: 500px;
+  background-color: #000;
+  z-index: 900;
+  display: block;
+}
+
+/* Make sure all containers allow overflow */
+.herocontainer, 
+.section-container,
+.page-container,
+.content-wrapper {
+  overflow: auto !important;
+}
+
+/* Also try adding this to get the desired effect */
+body {
+  overscroll-behavior: none; 
+  height: 100%; /* Full height */
+}
+
+/* Create a specific background cover that extends beyond the viewport */
+.page-background-cover {
+	position: fixed;
+	bottom: -100vh; /* Position it below the viewport */
+	left: 0;
+	width: 100vw;
+	height: 100vh;
+	background-color: #000;
+	z-index: 1; /* Higher than the background image but lower than content */
+}
+
+/* Clean up previous attempts */
+.footer-container::after, 
+.footer-extension,
+.universal-spacer {
+    display: none;
+}
+
+/* Add this fixed position element that only shows during overscroll */
+.overscroll-area {
+    position: fixed; 
+    bottom: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh; /* Full screen height */
+    background-color: #000;
+    z-index: -1; /* Behind content but will show when overscrolling */
+}
+
+/* This is for Safari browsers */
+::-webkit-scrollbar {
+    width: 0px; /* No scrollbar */
+}
+
+/* Instead, target only specific content containers that need backgrounds */
+.section-content > div:not(.transparent-container) {
+    background-color: #000 !important;
+    position: relative;
+    z-index: 2;
+}
+
+/* Add a class for containers that should preserve transparency */
+.transparent-container {
+    position: relative;
+    z-index: 2;
+    /* No background color */
+}
+
+/* Style for transparent images specifically */
+.transparent-image {
+    /* No background */
+    opacity: 1;
+    transition: opacity 0.3s ease;
+}
+
+/* Smooth scrolling optimizations */
+
+/* Enable smooth scrolling on the main containers */
+html {
+    scroll-behavior: auto; /* Default browser scrolling behavior */
+}
+
+.herocontainer, 
+.section-container, 
+.content-wrapper {
+    /* Keep only the iOS smooth scrolling */
+    -webkit-overflow-scrolling: touch; /* Smooth physics-based scrolling on iOS */
+    
+    /* Remove any hardware acceleration that might make it feel unnatural */
+    transform: none;
+    will-change: auto;
+    backface-visibility: visible;
+    -webkit-backface-visibility: visible;
+}
+
+/* Remove any performance optimizations that affect scrolling feel */
+.section-content,
+.footer-container,
+.content-wrapper > div {
+    transform: none;
+    will-change: auto;
+}
+
+/* Reset any aggressive text rendering optimizations */
+* {
+    text-rendering: auto; /* Default rendering */
+}
+
+/* Ensure the scroll events can propagate naturally */
+body, html {
+    overscroll-behavior: auto; /* Natural overscroll behavior */
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+
+/* Reduce paint operations during scroll */
+* {
+    /* Avoid expensive text rendering during scroll */
+    text-rendering: optimizeSpeed;
+}
+
+/* Optimize image rendering during scroll */
+img {
+    /* Better image interpolation during scaling/transitions */
+    image-rendering: optimizeQuality;
+}
+
+/* Throttle animations during scroll */
+@media (prefers-reduced-motion: no-preference) {
+    .section-container {
+        /* Reduce animation processing during scroll */
+        scroll-timeline: --scrollTimeline block;
+    }
 }

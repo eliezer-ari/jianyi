@@ -186,6 +186,17 @@ export default function Hero() {
 		}
 	};
 
+	// Add to your component useEffect
+	useEffect(() => {
+		// Simply ensure the body can scroll naturally
+		document.body.style.overflow = 'auto';
+		
+		// Clean up any scroll listeners that might be interfering
+		return () => {
+			// Clean up if needed
+		};
+	}, []);
+
 	return (
 		<div id="hero" className="herocontainer">
 			<div id="page-container" className="page-container">
@@ -244,6 +255,9 @@ export default function Hero() {
 					</div>
 				</div>
 			</div>
+
+			{/* Add this after everything */}
+			<div className="black-extension" style={{ top: '100vh' }}></div>
 		</div>
 	);
 }
