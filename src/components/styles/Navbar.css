@@ -300,10 +300,6 @@
 	pointer-events: auto;
 }
 
-.mobile-navlinks.active {
-	color: var(--active-color);
-}
-
 /* Media query for displaying hamburger menu at 729px */
 @media (max-width: 768px) {
 	.hamburger-button {
