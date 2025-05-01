@@ -137,7 +137,7 @@ const VideoPhotoProject = ({ project }) => {
                     style={{ cursor: "pointer", width: "100%" }}
                     onClick={() => openModal(index)}
                   />
-                  <div style={{
+                  {/* <div style={{
                     position: "absolute",
                     bottom: "0",
                     left: "calc(100% + 10px)",
@@ -147,7 +147,7 @@ const VideoPhotoProject = ({ project }) => {
                     fontWeight: "bold"
                   }}>
                     {"["}{index + 1}{"]"}
-                  </div>
+                  </div> */}
                 </div>
               ))
             ) : (

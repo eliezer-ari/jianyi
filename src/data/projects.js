@@ -20,7 +20,7 @@ const projects = [
       require("../components/images/cloud_states/C3.jpg"),
       require("../components/images/cloud_states/C4.jpg")
     ],
-    endText1: "1-2.  Cloud States, 2023.  Video stills. Cove Park, Helensburgh, Scotland. \n\n3-4.  Cloud States, 2023.  Video stills.  Cove Park, Helensburgh, Scotland.",
+    endText1: "1-2.  Cloud States, 2023.  Video stills. Cove Park, Helensburgh, Scotland. \n\n3-4.  Cloud States, 2023.  Installation view.  French Street, Glasgow, Scotland.",
   },
   {
     id: 2,
@@ -221,7 +221,7 @@ const projects = [
       "https://player.vimeo.com/video/454067570?badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479",
       "https://player.vimeo.com/video/24753251?h=1377af1b8b&amp;badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479",
     ],
-    description: `The two-related works, 'Where is Jesus?' and 'I Love Jesus', can be seen in conversation with each other. \n\nBoth works play with the complexity of faith and personal belief – privileging the subjective and often sacrilegious experiences of people over religious doctrine. The first piece is a 'performative-documentary' that follows an Iranian immigrant (Ava Ansari) playing a naïve character searching for Jesus in the East Village, NYC. The second is a solo performance that finds a more personal relationship to objects of reverence, belief and spiritual practice, queering the meaning and experience of faith. \n\nBoth works explore the disconnect between individual experiences and any sort of overarching systems of doctrinal orthodoxy. 'Where is Jesus?' is tinged with both absurdist humour and a melancholic awareness of the existentialist predicament of our times. 'I Love Jesus' stages a more direct confrontation with religious orthodoxy, looking at the contemporary culture wars in America and discussions around obscenity, taboo and sanitisation in the arts. `,
+    description: `The two-related works, 'Where is Jesus?' and 'I Love Jesus', can be seen in conversation with each other. Both works play with the complexity of faith and personal belief – privileging the subjective and often sacrilegious experiences of people over religious doctrine. The first piece is a 'performative-documentary' that follows an Iranian immigrant (Ava Ansari) playing a naïve character searching for Jesus in the East Village, NYC. The second is a solo performance that finds a more personal relationship to objects of reverence, belief and spiritual practice, queering the meaning and experience of faith. \n\nBoth works explore the disconnect between individual experiences and any sort of overarching systems of doctrinal orthodoxy. 'Where is Jesus?' is tinged with both absurdist humour and a melancholic awareness of the existentialist predicament of our times. 'I Love Jesus' stages a more direct confrontation with religious orthodoxy, looking at the contemporary culture wars in America and discussions around obscenity, taboo and sanitisation in the arts. `,
   },
 
   {
@@ -229,16 +229,16 @@ const projects = [
     title: "Dancing by myself in public",
     type: "video-photo",
     darkOverlay: false,
-    mainPhoto: require("../components/images/dancing/main.jpg"),
-    mainMobilePhoto: require("../components/images/dancing/mainmobile.png"),
+    mainPhoto: require("../components/images/dancing/D2.jpg"),
+    mainMobilePhoto: require("../components/images/dancing/D2.jpg"),
     videoUrls: [
       "https://player.vimeo.com/video/454065624?h=1ed8abb93a&amp;badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479",
       "https://player.vimeo.com/video/454079432?h=7f5ec2b51b&amp;badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479",
     ],
-    photoUrls: [
-      require("../components/images/dancing/D1.jpg"),
-      require("../components/images/dancing/D2.jpg"),
-    ],
+    // photoUrls: [
+    //   require("../components/images/dancing/D1.jpg"),
+    //   require("../components/images/dancing/D2.jpg"),
+    // ],
     description: `Working with non-professional dancers to make expressive/personal narratives in solo movement pieces in public spaces in New York City, this work explores the possibility of reclaiming the conditions of the 'commons' and public space in the post-9/11 security state. \n\nA performance and video art series of guerilla interventions, the almost hallucinatory dances come in and out of view like a subjective dream – interrogating through practice what it is to bring the otherwise private/sub-conscious dream world of the individual into public view. The meeting of the private and public spheres in this work explores the liberating potential of dance and personal movement practices through deterritorialising interventions.`,
   },
 

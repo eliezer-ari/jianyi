@@ -70,6 +70,18 @@
 
 }
 
+@media (max-height: 768px) {
+  .work-modal-link {
+    font-size: 12px;
+    padding: 0 2rem;
+    max-width: 100%;
+    line-height: 1.8;
+    letter-spacing: 0.2rem;
+    max-width: 375px;
+  }
+}
+
+
 @media (max-width: 768px) {
   .work-modal-link {
     font-size: 10px;
@@ -81,9 +93,7 @@
   }
 }
 
-.work-modal-link:hover {
-  color: #ccc;
-}
+
 
 .work-modal-link::after {
   content: '';
@@ -96,10 +106,6 @@
   transition: width 0.3s ease, left 0.3s ease;
 }
 
-.work-modal-link:hover::after {
-  width: 100%;
-  left: 0;
-}
 
 @keyframes fadeIn {
   from {
@@ -246,3 +252,5 @@
 .indicator.active {
   background-color: #000;
 }
+
+
