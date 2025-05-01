@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
+import { disableBodyScroll, enableBodyScroll, clearAllBodyScrollLocks } from 'body-scroll-lock';
 import "./styles/Navbar.css";
 import SelectedWorkModal from "./SelectedWorkModal";
 import Logo from "./images/jianlogo.png";
@@ -9,6 +10,7 @@ const Navbar = ({ setActiveSection, activeSection }) => {
 	const [isSelectedWorkModalOpen, setIsSelectedWorkModalOpen] = useState(false);
 	const [isModalClosing, setIsModalClosing] = useState(false);
 	const [isMenuOpen, setIsMenuOpen] = useState(false);
+	const menuRef = useRef(null);
 
 	useEffect(() => {
 		const handleScroll = () => {
@@ -29,13 +31,25 @@ const Navbar = ({ setActiveSection, activeSection }) => {
 		setActiveLink(activeSection);
 	}, [activeSection]);
 
+	useEffect(() => {
+		const menu = menuRef.current;
+		if (isMenuOpen && menu) {
+			disableBodyScroll(menu);
+		} else if (menu) {
+			enableBodyScroll(menu);
+		}
+		return () => {
+			clearAllBodyScrollLocks();
+		};
+	}, [isMenuOpen]);
+
 	const handleLinkClick = (section) => {
 		if (section === "SelectedWork") {
 			setIsSelectedWorkModalOpen(true);
 		} else {
 			setActiveSection(section);
 		}
-		setIsMenuOpen(false); // Close mobile menu after clicking
+		setIsMenuOpen(false); // Close mobile menu after clicking a link
 	};
 
 	const handleCloseModal = () => {
@@ -44,6 +58,17 @@ const Navbar = ({ setActiveSection, activeSection }) => {
 
 	const toggleMenu = () => {
 		setIsMenuOpen(!isMenuOpen);
+	};
+
+	// Handler for clicks within the mobile menu container
+	const handleMobileMenuClick = (event) => {
+		// Check if the clicked element has the 'mobile-navlinks' class
+		// If it DOES NOT, close the menu.
+		if (!event.target.classList.contains('mobile-navlinks')) {
+			setIsMenuOpen(false);
+		}
+		// If it DOES have the class, the link's own onClick (handleLinkClick) 
+		// will handle the navigation and closing the menu, so we do nothing here.
 	};
 
 	return (
@@ -117,15 +142,19 @@ const Navbar = ({ setActiveSection, activeSection }) => {
 						</div>
 					</button>
 					
-					{/* Mobile menu */}
-					<div className={`mobile-menu ${isMenuOpen ? 'open' : ''}`}>
+					{/* Mobile menu - Add onClick handler */}
+					<div
+						ref={menuRef}
+						className={`mobile-menu ${isMenuOpen ? 'open' : ''}`}
+						onClick={handleMobileMenuClick}
+					>
 						<ul className="mobile-navmenu">
 							<li className="mobile-navitem">
 								<button
 									className={`mobile-navlinks ${
 										activeLink === "Bio" ? "active" : ""
 									}`}
-									onClick={() => handleLinkClick("Bio")}
+									onClick={() => handleLinkClick("Bio")} 
 								>
 									Bio
 								</button>

@@ -5,7 +5,7 @@
 	justify-content: center;
 	align-items: flex-start;
 	width: 100vw;
-	height: 100vh;
+	height: calc(var(--vh, 1vh) * 100); /* Use --vh */
 	display: flex;
 	flex-direction: column-reverse;
 	background: transparent;
@@ -79,7 +79,14 @@
 	transform: translateY(-0.2rem);
 	transition: all 0.25s ease;
 	pointer-events: auto; /* Make links clickable */
-	height: 9rem;
+	height: 6rem;
+	opacity: 80%;
+}
+
+@media (max-width: 768px) {
+	.navbarlogo {
+		height: 4.5rem;
+	}
 }
 
 .navbarlogo.active {
@@ -136,7 +143,7 @@
 	color: var(--inactive-color);
 	/* text-transform: uppercase; */
 	font-weight: 400;
-	font-size: 1.4rem;
+	font-size: 1rem;
 	text-transform: uppercase;
 	/* padding: 0.5rem 0rem; */
 	border: none;
@@ -242,7 +249,7 @@
 	position: fixed;
 	top: 0;
 	right: 0;
-	height: 100vh;
+	height: calc(var(--vh, 1vh) * 100); /* Use --vh */
 	width: 100vw;
 	background-color: rgba(0, 0, 0, 0.7);
 	z-index: 1350;

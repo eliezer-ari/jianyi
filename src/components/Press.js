@@ -17,11 +17,9 @@ const Press = ({ setNextSection }) => {
 	const mobileVideoUrl = Fire;
 
 	const videoRef = useRef(null);
-	const hiddenVideoRef = useRef(null);
 	const [isMobile, setIsMobile] = useState(false);
 	const [isSmallScreen, setIsSmallScreen] = useState(false);
-	const [videoReady, setVideoReady] = useState(false);
-	const [showVideo, setShowVideo] = useState(false);
+	const [videoLoaded, setVideoLoaded] = useState(false);
 
 	// Check if it's mobile or desktop
 	useEffect(() => {
@@ -51,64 +49,25 @@ const Press = ({ setNextSection }) => {
 		};
 	}, []);
 
-	// Set up hidden preload video
+	// Attempt to play video when mounted or when isMobile changes
 	useEffect(() => {
-		setVideoReady(false);
-		setShowVideo(false);
-		
-		const hiddenVideo = hiddenVideoRef.current;
-		if (!hiddenVideo) return;
-		
-		const handleHiddenCanPlay = () => {
-			console.log("Hidden video can play");
-			setVideoReady(true);
-			
-			// After 1 second, show the main video
-			setTimeout(() => {
-				setShowVideo(true);
-			}, 1000);
-		};
-		
-		hiddenVideo.addEventListener('canplay', handleHiddenCanPlay);
-		
-		return () => {
-			hiddenVideo.removeEventListener('canplay', handleHiddenCanPlay);
-			
-			// Cleanup videos on unmount
-			if (hiddenVideo) {
-				hiddenVideo.pause();
-				hiddenVideo.currentTime = 0;
-			}
-			
-			if (videoRef.current) {
-				videoRef.current.pause();
-				videoRef.current.currentTime = 0;
-			}
-		};
-	}, [isMobile]);
-
-	// When main video becomes visible, play it
-	useEffect(() => {
-		if (showVideo && videoRef.current) {
-			videoRef.current.play().catch(error => {
+		const video = videoRef.current;
+		if (video) {
+			video.play().catch((error) => {
 				console.error("Video playback failed:", error);
 			});
 		}
-	}, [showVideo]);
+		// Reset fade-in when src changes
+		setVideoLoaded(false);
+	}, [isMobile]);
+
+	const handleCanPlay = () => {
+		setVideoLoaded(true);
+	};
 
 	return (
 		<>
 			<div className="standard-container">
-				{/* Hidden video for preloading */}
-				<video
-					ref={hiddenVideoRef}
-					src={isMobile ? mobileVideoUrl : videoUrl}
-					preload="auto"
-					muted
-					playsInline
-					style={{ display: "none" }}
-				/>
-				
 				{/* Background image (always visible) - responsive image based on screen size */}
 				<div 
 					style={{
@@ -126,34 +85,28 @@ const Press = ({ setNextSection }) => {
 				/>
 				
 				{/* Visible video that fades in */}
-				{videoReady && (
-					<div
-						style={{
-							position: "fixed",
-							top: 0,
-							left: 0,
-							width: "100vw",
-							height: "100vh",
-							zIndex: -5,
-							opacity: showVideo ? 1 : 0,
-							transition: "opacity 2s ease-in-out"
-						}}
-					>
-						<video
-							ref={videoRef}
-							src={isMobile ? mobileVideoUrl : videoUrl}
-							autoPlay
-							loop
-							muted
-							playsInline
-							style={{
-								width: "100%",
-								height: "100%",
-								objectFit: "cover"
-							}}
-						/>
-					</div>
-				)}
+				<video
+					ref={videoRef}
+					src={isMobile ? mobileVideoUrl : videoUrl}
+					autoPlay
+					loop
+					muted
+					playsInline
+					preload="auto"
+					onCanPlay={handleCanPlay}
+					poster={isSmallScreen ? BGImageMobile : BGImage} // Use poster matching the background
+					style={{
+						position: "fixed",
+						top: 0,
+						left: 0,
+						width: "100vw",
+						height: "100vh",
+						objectFit: "cover",
+						zIndex: -5,
+						opacity: videoLoaded ? 1 : 0, // Fade in when ready
+						transition: `opacity ${isMobile ? '700ms' : '700ms'} ease-in-out` // Slower transition on mobile
+					}}
+				/>
 				
 				{/* Dark overlay */}
 				<div className="dark-overlay" style={{ zIndex: -1 }}></div>

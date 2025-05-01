@@ -4,7 +4,7 @@
 	justify-content: flex-start;
 	align-items: center;
 	position: relative;
-	height: 100vh;
+	min-height: calc(var(--vh, 1vh) * 100); /* Use --vh */
 	width: 100%;
 	padding-top: 6rem;
 	padding-bottom: 6rem;
@@ -24,6 +24,7 @@
 	justify-content: center;
 	align-items: center;
 	width: 100%;
+	height: fit-content;
 }
 
 .contact-container form {
@@ -58,7 +59,7 @@
 	text-align: left; /* Center the text within the h1 */
 
 
-	font-size: var(--h3-size);
+	font-size: 2.5rem;
 	font-weight: 400;
 	color: #fff;
 	font-family: var(--font-standard);
@@ -75,7 +76,6 @@
 	
 
 
-	font-size: var(--h3-size);
     font-weight: 600;
     color: #fff;
     font-family: var(--font-standard);    text-transform: uppercase;
@@ -87,10 +87,10 @@
 
 @media (max-width: 768px) {
 	.contact-container h1 {
-		font-size: 3rem;
+		font-size: 1.9rem;
 		line-height: 1;
 		margin-bottom: 0;
-		padding-bottom: 3rem;
+		padding-bottom: 5rem;
 	}
 }
 

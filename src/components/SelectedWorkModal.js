@@ -55,7 +55,12 @@ const SelectedWorkModal = ({ isOpen, onClose, setActiveSection }) => {
                 className="work-modal-link" 
                 onClick={() => handleProjectClick(project.id)}
               >
-                {project.title} 
+                {project.title.split('\n').map((text, i) => (
+                  <React.Fragment key={i}>
+                    {i > 0 && <br />}
+                    {text}
+                  </React.Fragment>
+                ))}
               </button>
             </li>
           ))}

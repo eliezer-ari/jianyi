@@ -3,8 +3,8 @@ import "./styles/Standard.css";
 import "./styles/Navbar.css";
 import "./styles/VideoFix.css";
 
-import BGImage from "./images/home/home.png"
-import BGImageMobile from "./images/home/homemobile.png"
+import BGImage from "./images/weathervanes/compressed/W2.jpg"
+import BGImageMobile from "./images/weathervanes/compressed/W2mobile.jpeg"
 const VideoPlaceholder = "https://jianxyi.s3.us-east-1.amazonaws.com/Weathervanes.mp4"
 
 const Home = () => {
@@ -12,85 +12,72 @@ const Home = () => {
 	const mobileVideoUrl = VideoPlaceholder;
 
 	const videoRef = useRef(null);
-	const hiddenVideoRef = useRef(null);
 	const [isMobile, setIsMobile] = useState(false);
 	const [isSmallScreen, setIsSmallScreen] = useState(false);
-	const [videoReady, setVideoReady] = useState(false);
-	const [showVideo, setShowVideo] = useState(false);
+	const [videoLoaded, setVideoLoaded] = useState(false);
 
-	// Check if it's mobile or desktop
+	// Check if it's mobile or desktop and set --vh unit
 	useEffect(() => {
+		const setVh = () => {
+			if (typeof window !== 'undefined') {
+				const vh = window.innerHeight * 0.01;
+				document.documentElement.style.setProperty('--vh', `${vh}px`);
+			}
+		};
+
+		setVh();
+		const timeoutId = setTimeout(setVh, 100);
+
 		const mediaQuery = window.matchMedia("(max-width: 960px)");
 		setIsMobile(mediaQuery.matches);
 
 		const handleMediaChange = (e) => {
 			setIsMobile(e.matches);
+			setVh(); // Recalculate on media query change
 		};
 
 		mediaQuery.addEventListener("change", handleMediaChange);
-		
-		// Check for small screens (< 768px)
+
 		const smallScreenMediaQuery = window.matchMedia("(max-width: 768px)");
 		setIsSmallScreen(smallScreenMediaQuery.matches);
-		
+
 		const handleSmallScreenChange = (e) => {
 			setIsSmallScreen(e.matches);
+			setVh(); // Recalculate on media query change
 		};
-		
+
 		smallScreenMediaQuery.addEventListener("change", handleSmallScreenChange);
-		
+
+		window.addEventListener('resize', setVh);
+		window.addEventListener('orientationchange', setVh);
+
 		return () => {
+			clearTimeout(timeoutId);
 			mediaQuery.removeEventListener("change", handleMediaChange);
 			smallScreenMediaQuery.removeEventListener("change", handleSmallScreenChange);
+			window.removeEventListener('resize', setVh);
+			window.removeEventListener('orientationchange', setVh);
 		};
 	}, []);
 
-	// Set up hidden preload video
+	// Attempt to play video when mounted or when isMobile changes
 	useEffect(() => {
-		setVideoReady(false);
-		setShowVideo(false);
-		
-		const hiddenVideo = hiddenVideoRef.current;
-		if (!hiddenVideo) return;
-		
-		const handleHiddenCanPlay = () => {
-			console.log("Hidden video can play");
-			setVideoReady(true);
-			
-			// After 1 second, show the main video
-			setTimeout(() => {
-				setShowVideo(true);
-			}, 1000);
-		};
-		
-		hiddenVideo.addEventListener('canplay', handleHiddenCanPlay);
-		
-		return () => {
-			hiddenVideo.removeEventListener('canplay', handleHiddenCanPlay);
-		};
-	}, [isMobile]);
-
-	// When main video becomes visible, play it
-	useEffect(() => {
-		if (showVideo && videoRef.current) {
-			videoRef.current.play().catch(error => {
+		const video = videoRef.current;
+		if (video) {
+			video.play().catch((error) => {
 				console.error("Video playback failed:", error);
 			});
 		}
-	}, [showVideo]);
+		// Reset fade-in when src changes
+		setVideoLoaded(false);
+	}, [isMobile]);
+
+	const handleCanPlay = () => {
+		setVideoLoaded(true);
+	};
 
 	return (
 		<div className="standard-container">
-			{/* Hidden video for preloading */}
-			<video
-				ref={hiddenVideoRef}
-				src={isMobile ? mobileVideoUrl : videoUrl}
-				preload="auto"
-				muted
-				playsInline
-				style={{ display: "none" }}
-			/>
-			
 			{/* Background image (always visible) - responsive image based on screen size */}
 			<div 
 				style={{
@@ -106,43 +93,37 @@ const Home = () => {
 					zIndex: -10
 				}}
 			/>
-			
-			{/* Visible video that fades in */}
-			{videoReady && (
-				<div
-					style={{
-						position: "fixed",
-						top: 0,
-						left: 0,
-						width: "100vw",
-						height: "100vh",
-						zIndex: -5,
-						opacity: showVideo ? 1 : 0,
-						transition: "opacity 2s ease-in-out"
-					}}
-				>
-					<video
-						ref={videoRef}
-						src={isMobile ? mobileVideoUrl : videoUrl}
-						autoPlay
-						loop
-						muted
-						playsInline
-						style={{
-							width: "100%",
-							height: "100%",
-							objectFit: "cover"
-						}}
-					/>
-				</div>
-			)}
-			
+
+			{/* Visible video that covers the background with fade-in effect */}
+			<video
+				ref={videoRef}
+				src={isMobile ? mobileVideoUrl : videoUrl}
+				autoPlay
+				loop
+				muted
+				playsInline
+				preload="auto"
+				onCanPlay={handleCanPlay}
+				poster={isSmallScreen ? BGImageMobile : BGImage} // Use poster matching the background
+				style={{
+					position: "fixed",
+					top: 0,
+					left: 0,
+					width: "100vw",
+					height: "100vh",
+					objectFit: "cover",
+					zIndex: -5,
+					opacity: videoLoaded ? 1 : 0, // Fade in when ready
+					transition: "opacity 700ms ease-in-out"
+				}}
+			/>
+
 			{/* Dark overlay */}
 			<div 
 				className="dark-overlay" 
 				style={{ zIndex: -1 }}
 			/>
-			
+
 			{/* Content container */}
 			<div className="content-container">
 				{/* Page content would go here */}

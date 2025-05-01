@@ -19,7 +19,7 @@
 /* Right-center positioning class */
 .video-background.right-center,
 .video-background-mobile.right-center {
-  object-position: right center !important;
+  object-position: top right !important;
 }
 
 /* Ensure dark overlay doesn't interfere with video */

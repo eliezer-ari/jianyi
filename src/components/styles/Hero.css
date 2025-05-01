@@ -253,13 +253,6 @@ html, body {
   display: block;
 }
 
-/* Make sure all containers allow overflow */
-.herocontainer, 
-.section-container,
-.page-container,
-.content-wrapper {
-  overflow: auto !important;
-}
 
 /* Also try adding this to get the desired effect */
 body {
@@ -336,7 +329,7 @@ html {
     -webkit-overflow-scrolling: touch; /* Smooth physics-based scrolling on iOS */
     
     /* Remove any hardware acceleration that might make it feel unnatural */
-    transform: none;
+    /* transform: none; */
     will-change: auto;
     backface-visibility: visible;
     -webkit-backface-visibility: visible;
@@ -346,7 +339,7 @@ html {
 .section-content,
 .footer-container,
 .content-wrapper > div {
-    transform: none;
+    	/* transform: none; */
     will-change: auto;
 }
 

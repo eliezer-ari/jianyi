@@ -2,12 +2,15 @@ import React, { useRef, useEffect, useState } from "react";
 import { useForm, ValidationError } from "@formspree/react";
 import "./styles/Contact.css";
 import "./styles/Standard.css";
+import BGImage from "./images/contact/contact.jpg"
+import BGImageMobile from "./images/contact/contactmobile.png" // Update with mobile version if available
 const Untitled = "https://jianxyi.s3.us-east-1.amazonaws.com/Untitled.mp4"
 
 export default function Contact() {
 	const [state, handleSubmit] = useForm("mqaqeyaz");
-	const desktopVideoRef = useRef(null);
 	const [isMobile, setIsMobile] = useState(false);
+	const [isSmallScreen, setIsSmallScreen] = useState(false);
+	const [videoLoaded, setVideoLoaded] = useState(false);
 	const videoRef = useRef(null);
 	const videoUrl = Untitled;
 	const mobileVideoUrl = Untitled;
@@ -23,25 +26,38 @@ export default function Contact() {
 		};
 
 		mediaQuery.addEventListener("change", handleMediaChange);
-		return () => mediaQuery.removeEventListener("change", handleMediaChange);
+		
+		// Check for small screens (< 768px)
+		const smallScreenMediaQuery = window.matchMedia("(max-width: 768px)");
+		setIsSmallScreen(smallScreenMediaQuery.matches);
+		
+		const handleSmallScreenChange = (e) => {
+			setIsSmallScreen(e.matches);
+		};
+		
+		smallScreenMediaQuery.addEventListener("change", handleSmallScreenChange);
+		
+		return () => {
+			mediaQuery.removeEventListener("change", handleMediaChange);
+			smallScreenMediaQuery.removeEventListener("change", handleSmallScreenChange);
+		};
 	}, []);
 
-	// Attempt to play video when mounted or when `isMobile` changes
+	// Attempt to play video when mounted or when isMobile changes
 	useEffect(() => {
-		const video = desktopVideoRef.current;
+		const video = videoRef.current;
 		if (video) {
-			console.log("Attempting to play video directly on mount/change.");
-
-			video
-				.play()
-				.then(() => {
-					console.log("Video playback successful.");
-				})
-				.catch((error) => {
-					console.error("Video playback failed:", error);
-				});
+			video.play().catch((error) => {
+				console.error("Video playback failed:", error);
+			});
 		}
+		// Reset fade-in when src changes
+		setVideoLoaded(false);
 	}, [isMobile]);
+
+	const handleCanPlay = () => {
+		setVideoLoaded(true);
+	};
 
 	// Form content based on submission state
 	const renderFormContent = () => {
@@ -60,7 +76,7 @@ export default function Contact() {
 						id="name"
 						type="text"
 						name="name"
-						placeholder="Name"
+						placeholder="Your Name"
 					/>
 				</div>
 				<div className="email-section">
@@ -68,7 +84,7 @@ export default function Contact() {
 						id="email"
 						type="email"
 						name="email"
-						placeholder="Email Address"
+						placeholder="Your Email Address"
 					/>
 				</div>
 				<div className="message-section">
@@ -89,23 +105,55 @@ export default function Contact() {
 	return (
 		<>
 		<div className="standard-container">
-				<video
-					ref={desktopVideoRef}
-					src={isMobile ? mobileVideoUrl : videoUrl}
-					autoPlay
-					loop
-					muted
-					playsInline
-					preload="auto"
-					className={isMobile ? "video-background-mobile" : "video-background"}
-				/>
-				{/* <button className="view-reel-button" onClick={handleViewReelClick}>
-					View Reel
-				</button> */}
-			</div>
+			{/* Background image (always visible) */}
+			<div 
+				style={{
+					position: "fixed",
+					top: 0,
+					left: 0,
+					width: "100vw",
+					height: "100vh",
+					backgroundImage: `url(${isSmallScreen ? BGImageMobile : BGImage})`,
+					backgroundPosition: "center",
+					backgroundSize: "cover",
+					backgroundRepeat: "no-repeat",
+					zIndex: -10
+				}}
+			/>
+			
+			{/* Visible video that fades in */}
+			<video
+				ref={videoRef}
+				src={isMobile ? mobileVideoUrl : videoUrl}
+				autoPlay
+				loop
+				muted
+				playsInline
+				preload="auto"
+				onCanPlay={handleCanPlay}
+				poster={isSmallScreen ? BGImageMobile : BGImage} // Use poster matching the background
+				style={{
+					position: "fixed",
+					top: 0,
+					left: 0,
+					width: "100vw",
+					height: "100vh",
+					objectFit: "cover",
+					zIndex: -5,
+					opacity: videoLoaded ? 1 : 0, // Fade in when ready
+					transition: `opacity ${isMobile ? '700ms' : '700ms'} ease-in-out` // Slower transition on mobile
+				}}
+			/>
+			
+			{/* Dark overlay */}
+			<div 
+				className="dark-overlay" 
+				style={{ zIndex: -1 }}
+			/>
+		</div>
 		<div className="contact-container">
 			<div className="contact-content">
-				<h1>Contact me</h1>
+				<h1>Contact Us</h1>
 				<div className="contact-form-container">
 					{renderFormContent()}
 				</div>

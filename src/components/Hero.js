@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import "./styles/Hero.css";
 import Navbar from "./Navbar.js";
 import NavbarMobile from "./NavbarMobile.js";
@@ -17,10 +17,16 @@ import VimeoLogo from "./images/vimeo-icon-lg.png";
 
 export default function Hero() {
 	const [activeSection, setActiveSection] = useState("Home");
-	const [isTransitioning, setIsTransitioning] = useState(false);
 	const [visibleSection, setVisibleSection] = useState("Home");
-	const [contentOpacity, setContentOpacity] = useState(1);
 	const [selectedProject, setSelectedProject] = useState(null);
+	const [contentOpacity, setContentOpacity] = useState(1);
+	const [isTransitioning, setIsTransitioning] = useState(false);
+
+	// NEW: Pending state
+	const [pendingSection, setPendingSection] = useState(null);
+	const [pendingProject, setPendingProject] = useState(null);
+
+	const contentWrapperRef = useRef(null);
 
 	// Helper function to convert title to URL-friendly slug
 	const createSlug = (title) => {
@@ -38,63 +44,74 @@ export default function Hero() {
 	};
 
 	const handleSectionChange = (section, projectId = null) => {
-		if (section !== activeSection || projectId) {
-			console.log(`Starting transition from ${activeSection} to ${section}${projectId ? ` with project ID ${projectId}` : ''}`);
+		// Avoid processing if already transitioning or no actual change
+		if (isTransitioning || (activeSection === section && (!projectId || selectedProject?.id === projectId))) {
+			return;
+		}
 
-			setIsTransitioning(true);
-			// Fade out only the content
-			setContentOpacity(0);
-
-			// Wait for fade out to complete
-			setTimeout(() => {
-				// If a project ID is provided, find and set the selected project
-				if (projectId) {
-					const project = projects.find(p => p.id === parseInt(projectId, 10));
-					if (project) {
-						setSelectedProject(project);
-						// Set the actual section to "Project"
-						section = "Project";
-						
-						// Update URL with project slug
-						window.location.hash = `project/${createSlug(project.title)}`;
-					}
+		// Track that we're starting a transition
+		setIsTransitioning(true);
+		
+		// 1. Start fade-out (extend duration for reliability)
+		setContentOpacity(0);
+		
+		// 2. After fade-out completes, update content and scroll
+		setTimeout(() => {
+			// Force scroll to absolute top using multiple approaches for cross-browser reliability
+			document.documentElement.scrollTop = 0;
+			document.body.scrollTop = 0;
+			window.scrollTo(0, 0);
+			
+			// Only after ensuring we're at the top, update the content
+			let newSection = section;
+			let newProject = null;
+			
+			if (projectId) {
+				const project = projects.find(p => p.id === parseInt(projectId, 10));
+				if (project) {
+					newProject = project;
+					newSection = "Project";
+					window.location.hash = `project/${createSlug(project.title)}`;
 				} else {
-					// Clear selected project if just changing to a regular section
-					setSelectedProject(null);
-					// Update URL with section name
-					window.location.hash = section;
+					newSection = "SelectedWork";
+					window.location.hash = newSection;
 				}
+			} else {
+				window.location.hash = section;
+			}
+			
+			// Now update states that control rendering
+			setVisibleSection(newSection);
+			setActiveSection(newSection);
+			setSelectedProject(newProject);
+			
+			// Update session storage
+			sessionStorage.setItem("lastActiveSection", newSection);
+			if (projectId) {
+				sessionStorage.setItem("selectedProjectId", projectId);
+			} else {
+				sessionStorage.removeItem("selectedProjectId");
+			}
+			
+			// 3. Ensure we're still at the top after content change
+			setTimeout(() => {
+				// Double-check scroll position
+				document.documentElement.scrollTop = 0;
+				document.body.scrollTop = 0;
+				window.scrollTo(0, 0);
 				
-				// Update section after fade out
-				setVisibleSection(section);
-				setActiveSection(section);
-				
-				// Scroll to top
-				window.scrollTo({ top: 0, left: 0, behavior: "instant" });
-				
-				// Then fade content back in
+				// 4. Only now start the fade-in
 				setContentOpacity(1);
 				setIsTransitioning(false);
-				
-				sessionStorage.setItem("lastActiveSection", section);
-				
-				// If project ID is provided, also save it
-				if (projectId) {
-					sessionStorage.setItem("selectedProjectId", projectId);
-				} else {
-					sessionStorage.removeItem("selectedProjectId");
-				}
-			}, 500); // Match the transition duration
-		} else {
-			console.log(`Section '${section}' is already active. No action needed.`);
-		}
+			}, 100); // Small buffer for DOM updates
+			
+		}, 900); // Extend fade-out time from 700ms to 900ms for visual smoothness
 	};
 
 	// Function to set the next section, used by back button in components
 	const setNextSection = (section, projectId = null) => {
 		handleSectionChange(section, projectId);
 	};
-
 
 	// Set initial section based on sessionStorage or hash in URL
 	useEffect(() => {
@@ -163,24 +180,24 @@ export default function Hero() {
 	};
 
 	const renderSection = () => {
-		// First check if we're showing a specific project
-		if (activeSection === "Project" && selectedProject) {
-			// Render the appropriate project component based on type
-			return selectedProject.type === "video-photo" 
-				? <VideoPhotoProject project={selectedProject} />
-				: <PhotoOnlyProject project={selectedProject} />;
+		// During transition, show the *old* content until fade-out is done
+		const sectionToShow = isTransitioning && pendingSection !== null ? visibleSection : visibleSection;
+		const projectToShow = isTransitioning && pendingProject !== null ? selectedProject : selectedProject;
+
+		if (sectionToShow === "Project" && projectToShow) {
+			return projectToShow.type === "video-photo"
+				? <VideoPhotoProject project={projectToShow} />
+				: <PhotoOnlyProject project={projectToShow} />;
 		}
-		
-		// Otherwise show the normal sections
-		switch (activeSection) {
+		switch (sectionToShow) {
 			case "SelectedWork":
-				return <SelectedWork setNextSection={setNextSection} />;
+				return <SelectedWork setNextSection={handleSectionChange} />;
 			case "Bio":
-				return <Bio setNextSection={setNextSection} />;
+				return <Bio setNextSection={handleSectionChange} />;
 			case "Press":
-				return <Press setNextSection={setNextSection} />;
+				return <Press setNextSection={handleSectionChange} />;
 			case "Contact":
-				return <Contact setNextSection={setNextSection} />;
+				return <Contact setNextSection={handleSectionChange} />;
 			default:
 				return <Home />;
 		}
@@ -210,10 +227,15 @@ export default function Hero() {
 					</div>
 					
 					{/* Content with dynamic opacity */}
-					<div className="content-wrapper" style={{ opacity: contentOpacity, transition: 'opacity 0.5s ease' }}>
-						{renderSection(activeSection)}
-						{activeSection === "Project" && selectedProject && (
+					<div 
+						ref={contentWrapperRef} 
+						className="content-wrapper" 
+						style={{ opacity: contentOpacity, transition: 'opacity 0.9s ease' }}
+					>
+						{renderSection()}
+						{visibleSection === "Project" && selectedProject && (
 							<div className="arrow-nav-container">
+								<div className="arrow-nav-container-inner">
 								<button
 									onClick={() => {
 										const currentIndex = projects.findIndex(p => p.id === selectedProject.id);
@@ -240,6 +262,7 @@ export default function Hero() {
 								>
 									<ArrowRight size={24} />
 								</button>
+								</div>
 							</div>
 						)}
 						<div className="footer-container">

@@ -3,6 +3,7 @@ import "../styles/ProjectTypes.css";
 import "../styles/Standard.css";
 import "../styles/VideoFix.css";
 import { ArrowLeft, ArrowRight, X } from "lucide-react";
+import ReactDOM from "react-dom";
 
 const VideoPhotoProject = ({ project }) => {
   const [isMobile, setIsMobile] = useState(false);
@@ -27,6 +28,7 @@ const VideoPhotoProject = ({ project }) => {
   }, []);
 
   const openModal = (index) => {
+    console.log("Opening modal at index:", index);
     setCurrentPhotoIndex(index);
     setIsModalOpen(true);
   };
@@ -35,22 +37,35 @@ const VideoPhotoProject = ({ project }) => {
 
   const showPrev = (e) => {
     e.stopPropagation();
-    setCurrentPhotoIndex((prev) =>
-      prev === 0 ? project.photoUrls.length - 1 : prev - 1
-    );
+    setCurrentPhotoIndex((prev) => {
+      const newIndex = prev === 0 ? project.photoUrls.length - 1 : prev - 1;
+      console.log("Previous photo index:", newIndex);
+      return newIndex;
+    });
   };
 
   const showNext = (e) => {
     e.stopPropagation();
-    setCurrentPhotoIndex((prev) =>
-      prev === project.photoUrls.length - 1 ? 0 : prev + 1
-    );
+    setCurrentPhotoIndex((prev) => {
+      const newIndex = prev === project.photoUrls.length - 1 ? 0 : prev + 1;
+      console.log("Next photo index:", newIndex);
+      return newIndex;
+    });
   };
   
   // Determine the position class based on the project's objectPosition property
   const getPositionClass = () => {
     return project.objectPosition === 'right-center' ? 'right-center' : '';
   };
+
+  useEffect(() => {
+    const setVh = () => {
+      document.documentElement.style.setProperty('--vh', `${window.innerHeight * 0.01}px`);
+    };
+    setVh();
+    window.addEventListener('resize', setVh);
+    return () => window.removeEventListener('resize', setVh);
+  }, []);
 
   return (
     <>
@@ -128,7 +143,7 @@ const VideoPhotoProject = ({ project }) => {
                     left: "calc(100% + 10px)",
                     color: "white",
                     padding: "0",
-                    fontSize: isMobile ? "12px" : "18px",
+                    fontSize: isMobile ? "12px" : "14px",
                     fontWeight: "bold"
                   }}>
                     {"["}{index + 1}{"]"}
@@ -164,52 +179,56 @@ const VideoPhotoProject = ({ project }) => {
 
 
       {/* Modal */}
-      {isModalOpen && hasPhotos && (
-        <div
-          className="photo-modal-overlay"
-          onClick={closeModal}
-          style={{
-            position: "fixed",
-            top: 0, left: 0, right: 0, bottom: 0,
-            background: "rgba(0,0,0,0.8)",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            zIndex: 1000,
-          }}
-        >
+      {isModalOpen && hasPhotos &&
+        ReactDOM.createPortal(
           <div
-            className="photo-modal-content"
-            onClick={(e) => e.stopPropagation()}
+            className="photo-modal-overlay"
+            onClick={closeModal}
             style={{
-              background: "#000",
-              padding: "10px 10px 0 10px",
-   
+              zIndex: 9000,
+              position: "fixed",
+              top: 0, left: 0, right: 0, bottom: 0,
+              background: "rgba(0,0,0,0.8)",
               display: "flex",
-              flexDirection: "column",
               alignItems: "center",
+              justifyContent: "center",
+              height: '100vh',
+              width: '100vw'
             }}
           >
-            <img
-              src={project.photoUrls[currentPhotoIndex]}
-              alt={`${project.title || "Project"} - Photo ${currentPhotoIndex + 1}`}
+            <div
+              className="photo-modal-content"
+              onClick={(e) => e.stopPropagation()}
               style={{
-                width: "100%",
-                height: "auto",
-                maxWidth: "90vw",
-                maxHeight: "90vh",
-           
+                background: "#000",
+                padding: "10px 10px 0 10px",
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                maxHeight: '100vh',
+                maxWidth: '100vw'
               }}
-            />
-                      <div style={{ display: "flex", alignItems: "center", gap: 16, padding: "10px 0 10px 0"}}>
-              <button style={{width: "100px"}}  onClick={showPrev} className="nav-button">Previous</button>
-              <span style={{ color: "#fff", width: isMobile ? "50px" : "40px", textAlign: "center" }}>{currentPhotoIndex + 1} / {project.photoUrls.length}</span>
-              <button style={{width: "100px"}} onClick={showNext} className="nav-button">Next</button>
+            >
+              <img
+                src={project.photoUrls[currentPhotoIndex]}
+                alt={`${project.title || "Project"} - Photo ${currentPhotoIndex + 1}`}
+                style={{
+                  maxWidth: "90vw",
+                  maxHeight: "90vh",
+                  objectFit: "contain"
+                }}
+              />
+              <div style={{ display: "flex", alignItems: "center", gap: 16, padding: "10px 0 10px 0"}}>
+                <button style={{width: "100px"}}  onClick={showPrev} className="nav-button">Previous</button>
+                <span style={{ color: "#fff", width: isMobile ? "50px" : "40px", textAlign: "center" }}>{currentPhotoIndex + 1} / {project.photoUrls.length}</span>
+                <button style={{width: "100px"}} onClick={showNext} className="nav-button">Next</button>
+              </div>
+              
             </div>
-            
-          </div>
-        </div>
-      )}
+          </div>,
+          document.body
+        )
+      }
     </>
   );
 };

@@ -60,19 +60,20 @@
   align-items: center;
   justify-content: center;
   font-family: var(--font-standard) !important;
-  font-size: var(--p-size);
+  font-size: 1rem;
   line-height: 1.6;
   margin: 0;
   /* margin: 2rem 0; */
   text-align: justify;
   width: 70%;
+  margin-top: 4rem;
 }
 
 
 @media (max-width: 768px) {
   .project-description-spc {
     width: 90%;
-    font-size: 1.1rem;
+    font-size: 0.9rem;
   }
 }
 

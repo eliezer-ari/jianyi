@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import "../styles/ProjectTypes.css";
 import "../styles/PhotoOnly.css";
+import ReactDOM from "react-dom";
 
 
 const PhotoOnlyProject = ({ project }) => {
@@ -165,36 +166,52 @@ const PhotoOnlyProject = ({ project }) => {
       </div>
 
       {/* Modal */}
-      {modalOpen && (
-        <div className="modal-overlay" onClick={closeModal} style={{
-          position: "fixed", top: 0, left: 0, width: "100vw", height: "100vh",
-          background: "rgba(0,0,0,0.8)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 1000
-        }}>
-          <div
-            className="modal-content"
-            onClick={e => e.stopPropagation()}
-            style={{
-              background: "#000", padding: "10px 10px 0 10px", display: "flex", flexDirection: "column", alignItems: "center"
-            }}
-          >
-            <img
-              src={project.photoUrls[modalPhotoIndex]}
-              alt={`${project.title || "Project"} - Modal Photo ${modalPhotoIndex + 1}`}
+      {modalOpen &&
+        ReactDOM.createPortal(
+          <div className="modal-overlay" onClick={closeModal} style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            width: "100vw",
+            height: 'calc(var(--vh, 1vh) * 100)',
+            background: "rgba(0,0,0,0.8)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            zIndex: 9000
+          }}>
+            <div
+              className="modal-content"
+              onClick={e => e.stopPropagation()}
               style={{
-                width: "100%",
-                height: "auto",
-                maxWidth: "90vw",
-                maxHeight: "90vh",
+                background: "#000",
+                padding: "10px 10px 0 10px",
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                maxHeight: 'calc(var(--vh, 1vh) * 100)',
+                maxWidth: '100vw'
               }}
-            />
-            <div style={{ display: "flex", alignItems: "center", gap: 16, padding: "10px 0 10px 0"}}>
-              <button style={{width: "100px"}} onClick={prevModalPhoto} className="nav-button">Previous</button>
-              <span style={{ color: "#fff", width: "70px", textAlign: "center" }}>{modalPhotoIndex + 1} / {project.photoUrls.length}</span>
-              <button style={{width: "100px"}} onClick={nextModalPhoto} className="nav-button">Next</button>
+            >
+              <img
+                src={project.photoUrls[modalPhotoIndex]}
+                alt={`${project.title || "Project"} - Modal Photo ${modalPhotoIndex + 1}`}
+                style={{
+                  maxWidth: "90vw",
+                  maxHeight: "90vh",
+                  objectFit: "contain"
+                }}
+              />
+              <div style={{ display: "flex", alignItems: "center", gap: 16, padding: "10px 0 10px 0"}}>
+                <button style={{width: "100px"}} onClick={prevModalPhoto} className="nav-button">Previous</button>
+                <span style={{ color: "#fff", width: "70px", textAlign: "center" }}>{modalPhotoIndex + 1} / {project.photoUrls.length}</span>
+                <button style={{width: "100px"}} onClick={nextModalPhoto} className="nav-button">Next</button>
+              </div>
             </div>
-          </div>
-        </div>
-      )}
+          </div>,
+          document.body
+        )
+      }
     </>
   );
 };
