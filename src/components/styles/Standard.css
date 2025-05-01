@@ -18,6 +18,14 @@
 	--p-size: 1.4rem;
 }
 
+button:focus,
+a:focus {
+  outline: none;
+}
+
+button, a {
+	-webkit-tap-highlight-color: transparent;
+  }
 
 .page-container {
 	width: 100vw;
