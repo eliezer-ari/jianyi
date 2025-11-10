@@ -159,7 +159,14 @@ const PhotoOnlyProject = ({ project }) => {
 
           {project.description && (
             <div className="project-description-spc">
-              <p>{project.description}</p>
+              <p>
+                {project.description.split('\n').map((text, i) => (
+                  <React.Fragment key={i}>
+                    {text}
+                    {i < project.description.split('\n').length - 1 && <br />}
+                  </React.Fragment>
+                ))}
+              </p>
             </div>
           )}
         </div>

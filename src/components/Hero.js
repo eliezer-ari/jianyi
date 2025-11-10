@@ -14,8 +14,12 @@ import { ArrowLeft, ArrowRight } from 'lucide-react';
 
 import InstaLogo from "./images/instagram-new.png";
 import VimeoLogo from "./images/vimeo-icon-lg.png";
+import { getBio, getPress, getProjects } from "../contentful.js";
 
 export default function Hero() {
+	const [projectsData, setProjectsData] = useState(null);
+	const [bioData, setBioData] = useState(null);
+	const [pressData, setPressData] = useState(null);
 	const [activeSection, setActiveSection] = useState("Home");
 	const [visibleSection, setVisibleSection] = useState("Home");
 	const [selectedProject, setSelectedProject] = useState(null);
@@ -27,6 +31,45 @@ export default function Hero() {
 	const [pendingProject, setPendingProject] = useState(null);
 
 	const contentWrapperRef = useRef(null);
+
+	// Fetch bio data in useEffect
+	useEffect(() => {
+		const fetchBioData = async () => {
+			try {
+				const bioResult = await getBio();
+				setBioData(bioResult);
+				// console.log(bio.fields); // If you need to log, do it here with bioResult
+			} catch (error) {
+				console.error("Failed to fetch bio:", error);
+				// Handle error state if necessary
+			}
+		};
+
+		const fetchPressData = async () => {
+			try {
+				const pressResult = await getPress();
+				setPressData(pressResult);
+				// console.log(bio.fields); // If you need to log, do it here with bioResult
+			} catch (error) {
+				console.error("Failed to fetch bio:", error);
+				// Handle error state if necessary
+			}
+		};
+
+		const fetchProjectsData = async () => {
+			try {
+				const projectsResult = await getProjects();
+				
+				setProjectsData(projectsResult);
+			} catch (error) {
+				console.error("Failed to fetch projects:", error);
+			}
+		};
+
+		fetchProjectsData();
+		fetchPressData();
+		fetchBioData();
+	}, []); // Empty dependency array ensures this runs once on mount
 
 	// Helper function to convert title to URL-friendly slug
 	const createSlug = (title) => {
@@ -193,9 +236,9 @@ export default function Hero() {
 			case "SelectedWork":
 				return <SelectedWork setNextSection={handleSectionChange} />;
 			case "Bio":
-				return <Bio setNextSection={handleSectionChange} />;
+				return <Bio data={bioData} setNextSection={handleSectionChange} />;
 			case "Press":
-				return <Press setNextSection={handleSectionChange} />;
+				return <Press data={pressData} setNextSection={handleSectionChange} />;
 			case "Contact":
 				return <Contact setNextSection={handleSectionChange} />;
 			default:
@@ -223,6 +266,7 @@ export default function Hero() {
 						<Navbar
 							setActiveSection={handleSectionChange}
 							activeSection={activeSection}
+							projectsData={projectsData}
 						/>
 					</div>
 					

@@ -4,15 +4,69 @@ import "./styles/Standard.css";
 import "./styles/Navbar.css";
 import "./styles/Bio.css";
 import Contact from "./Contact";
+
+import { documentToReactComponents } from '@contentful/rich-text-react-renderer'
+import { BLOCKS, MARKS, INLINES } from '@contentful/rich-text-types'
 // Remove unused imports
 import BGImage from "./images/bio/bio.jpg" // You'll need to add this image
 import BGImageMobile from "./images/bio/biomobile.jpg" // You'll need to add this image
 const Magic = "https://jianxyi.s3.us-east-1.amazonaws.com/MagicTheatre.mp4"
 
-const Bio = ({ setNextSection }) => {
+
+const options = {
+	renderMark: {
+	  [MARKS.BOLD]: (text) => <span className="font-bold">{text}</span>,
+	  [MARKS.ITALIC]: (text) => <span className="italic">{text}</span>,
+	},
+	renderNode: {
+	  [BLOCKS.PARAGRAPH]: (node, children) => (
+		<p className="mb-4 text-lg font-pp-light">{children}</p>
+	  ),
+	  [BLOCKS.HEADING_2]: (node, children) => (
+		<h2 className="text-3xl font-clash-regular mb-4 mt-8">{children}</h2>
+	  ),
+	  [BLOCKS.HEADING_3]: (node, children) => (
+		<h3 className="text-2xl font-clash-regular mb-3 mt-6">{children}</h3>
+	  ),
+	  [BLOCKS.UL_LIST]: (node, children) => (
+		<ul className="list-disc ml-6 mb-4 font-pp-light">{children}</ul>
+	  ),
+	  [BLOCKS.OL_LIST]: (node, children) => (
+		<ol className="list-decimal ml-6 mb-4 font-pp-light">{children}</ol>
+	  ),
+	  [BLOCKS.LIST_ITEM]: (node, children) => (
+		<li className="mb-2">{children}</li>
+	  ),
+	  [BLOCKS.QUOTE]: (node, children) => (
+		<blockquote className="border-l-4 border-gray-300 pl-4 italic my-4 font-pp-light">{children}</blockquote>
+	  ),
+	  'embedded-asset-block': (node) => (
+		<div className="my-8">
+		  <img 
+			className="w-full" 
+			src={`https:${node.data.target.fields.file.url}`}
+			alt={node.data.target.fields.description || ''}
+		  />
+		</div>
+	  ),
+	  [INLINES.HYPERLINK]: (node, children) => (
+		<a 
+		  href={node.data.uri}
+		  className="text-blue-600 hover:underline font-pp-light"
+		  target="_blank"
+		  rel="noopener noreferrer"
+		>
+		  {children}
+		</a>
+	  ),
+	}
+  }
+
+const Bio = ({ setNextSection, data }) => {
 	const videoUrl = Magic;
 	const mobileVideoUrl = Magic;
 
+	// console.log("Data prop in Bio:", data); // For debugging
 	const videoRef = useRef(null);
 	const [isMobile, setIsMobile] = useState(false);
 	const [isSmallScreen, setIsSmallScreen] = useState(false);
@@ -71,6 +125,14 @@ const Bio = ({ setNextSection }) => {
 		window.open(videoUrl, "_blank", "noopener,noreferrer");
 	};
 
+	// Conditional rendering: if data or data.fields is not available, show loading or return null
+	if (!data || !data.fields) {
+		return <p>Loading bio...</p>; // Or return null, or a more sophisticated loading spinner
+	}
+
+	// Now it's safe to access data.fields
+	const { bioHeader, bioContent } = data.fields; // Assuming these fields exist
+
 	return (
 		<>
 			<div className="standard-container">
@@ -123,10 +185,9 @@ const Bio = ({ setNextSection }) => {
 			<div className="bio-container">
 				<div className="bio-content">
 					<div className="bio-text">
-						<h3>Bio – Jian X Yi</h3>
-						<p>
-						Through Jian Yi's multidisciplinary work of performance art/contemporary dance, video art/photography, new genres, installation art and social sculpture – they seek to explore the experiential trauma of marginalised persons within our society, such as neurodiverse and queer people of colour, and how we reflect on the broader human condition. Their practice is rooted in an ongoing enquiry into the ambiguities of emotional experience, and touches upon borderline states – considering Otherness, neurodivergence and alternative states of consciousness/being – in line with their continuing research focus on queer mental health. Questions around social normalcy and the figure of the 'social outsider' – often takes precedence in their work, estranging everyday realities through intensified mental and emotional states. Their projects are a multi-sensory exploration of unconscious dream states – seeking collective experiences of contemporary queer ritual.</p>
-						<p>Jian Yi's work has been performed/exhibited internationally in locations such as New Museum, The Kitchen NYC, ACMI Melbourne, Buddies in Bad Times Toronto, Contact Manchester, CPT London, DanceLive Aberdeen, Summerhall, Dance Base Edinburgh, Tramway and Centre for Contemporary Arts Glasgow. They have received funding awards and have been selected for international artist residencies including with Cove Park, Tramway, Unlimited, Dance4, Dance Base, Made in Scotland at the Edinburgh Festival Fringe/Summerhall, Take Me Somewhere Festival/Work Room Glasgow, Creative Scotland, NTS, Live Art Development Agency London, Movement Research NYC, Brooklyn Arts Council, Theatertreffen Berlin, People's History Museum Manchester, and Seventh Gallery Melbourne among others. In 2023, they curated/produced the highly-anticipated second edition of Journey to the East Festival (<a href="https://www.jttefest.com" target="_blank" rel="noopener noreferrer">www.jttefest.com</a>) – featuring performing artists including Matt Mullican, Sung Im Her, River Lin and Keioui Keijaun Thomas.</p>					</div>
+						<h3>{bioHeader}</h3>
+						{bioContent && documentToReactComponents(bioContent, options)}
+					</div>
 				</div>
 			</div>
 		</>

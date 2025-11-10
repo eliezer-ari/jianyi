@@ -176,10 +176,11 @@
 	color: #656565;
 	outline: none; /* Removes the default focus outline */
 	padding: 0.35rem 1rem;
+	transition: ease-in-out 500ms;
 }
 
 .contact-container button:hover {
-	color: #fff;
+	color: #242424;
 }
 
 .contact-container button:active {

@@ -8,11 +8,15 @@
     "npm": ">=8"
   },
   "dependencies": {
+    "@contentful/rich-text-react-renderer": "^16.0.1",
+    "@contentful/rich-text-types": "^17.0.0",
     "@formspree/react": "^2.5.1",
     "@testing-library/jest-dom": "^5.14.1",
     "@testing-library/react": "^13.0.0",
     "@testing-library/user-event": "^13.2.1",
     "body-scroll-lock": "^4.0.0-beta.0",
+    "contentful": "^11.5.22",
+    "dotenv": "^16.5.0",
     "formik": "^2.4.6",
     "lucide-react": "^0.503.0",
     "ngrok": "^5.0.0-beta.2",

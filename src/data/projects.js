@@ -1,268 +1,343 @@
 // This is a placeholder data file for projects
 // In the future, this will be replaced with data from Contentful
+import { getProjects } from "../contentful.js";
+import { documentToReactComponents } from "@contentful/rich-text-react-renderer";
+import { BLOCKS, MARKS, INLINES } from '@contentful/rich-text-types'
 
-const projects = [
-  {
-    id: 1,
-    title: "Cloud States",
-    type: "video-photo",
-    darkOverlay: false,
-    description: "Cloud States is an upcoming multi-disciplinary performance art work mapping queer migrant belonging. Working with movement, immersive installation, multimedia and video art, Cloud States includes a series of films shot on location at Cove Park in Scotland. \n\nThe films explore personal experiences of 'lost-wandering' – and the existential search for a queer migrant belonging in remote country landscapes through the excavation of internal/external wildernesses. Cloud States seeks to explore the meeting point of internal and external realms, proposing a return as such to the originary softness and vulnerability of the body (through exploring internal states of Nirvana).",
-    mainPhoto: require("../components/images/cloud_states/main.jpg"),
-    mainMobilePhoto: require("../components/images/cloud_states/mainmobile.png"),
-    videoUrls: [
-      "https://player.vimeo.com/video/1071095870?badge=0&amp",
-      "https://player.vimeo.com/video/903553460?h=dc70b0b9e5&amp"
-    ],
-    photoUrls: [
-      require("../components/images/cloud_states/C1.jpg"),
-      require("../components/images/cloud_states/C2.jpg"),
-      require("../components/images/cloud_states/C3.jpg"),
-      require("../components/images/cloud_states/C4.jpg")
-    ],
-    endText1: "1-2.  Cloud States, 2023.  Video stills. Cove Park, Helensburgh, Scotland. \n\n3-4.  Cloud States, 2023.  Installation view.  French Street, Glasgow, Scotland.",
-  },
-  {
-    id: 2,
-    title: "Weathervanes",
-    type: "video-photo",
-    darkOverlay: false,
-    description: "Weathervanes is an immersive ritual dance-theatre experience that tunes into the collective psyche to create a dreaming state of mind; an architecture of queer futurity. Drawing on Western art history and classical depictions of the nude body in paintings and figurative sculpture, Weathervanes asks us to reframe concepts of the beautiful and what is holy through re-envisioning contemporary 'living sculptures' that centre Queer People of Colour. \n\nThe performance-installation seeks to restore our connection to inner-worlds; in exploring the notion of 'original innocence' in the Garden of Eden (before the fall of man) – this work opposes fear, shame and denial of our fleshly bodies through forming a womb-like collective dream space.",
-    mainPhoto: require("../components/images/weathervanes/compressed/main.jpg"),
-    mainMobilePhoto: require("../components/images/weathervanes/compressed/mainmobile.png"),
-    videoUrls: [
-      "https://player.vimeo.com/video/845034913?badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479",
-      "https://player.vimeo.com/video/452704100?badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479",
-    ],
-    photoUrls: [
-      require("../components/images/weathervanes/compressed/W1.jpg"),
-      require("../components/images/weathervanes/compressed/W2.jpg"),
-      require("../components/images/weathervanes/compressed/W3.jpg"),
-      require("../components/images/weathervanes/compressed/W4.jpg"),
-      require("../components/images/weathervanes/compressed/W5.jpg"),
-      require("../components/images/weathervanes/compressed/W6.jpg"),
-      require("../components/images/weathervanes/compressed/W7.jpg"),
-      require("../components/images/weathervanes/compressed/W8.jpg"),
-      require("../components/images/weathervanes/compressed/W9.jpg"),
-      require("../components/images/weathervanes/compressed/W10.jpg"),
-      require("../components/images/weathervanes/compressed/W11.jpg"),
-      require("../components/images/weathervanes/compressed/W12.jpg"),
-      require("../components/images/weathervanes/compressed/W13.jpg"),
-      require("../components/images/weathervanes/compressed/W14.jpg"),
-      require("../components/images/weathervanes/compressed/W15.jpg"),
-      require("../components/images/weathervanes/compressed/W16.jpg"),
-    ],
-    endText1: " 1-5.  Weathervanes, 2023.  Production stills.  Summerhall, Edinburgh, Scotland.  Photographer: Brian Hartley. \n\n6-14.  Weathervanes, 2021.  Production stills.  Tramway, Glasgow, Scotland.  Photographer: Brian Hartley. \n\n15-16.  Weathervanes, 2020.  Production stills.  Glasgow, Scotland.  Photographer: Julianna Laird."
+const options = {
+	renderMark: {
+	  [MARKS.BOLD]: (text) => <span className="font-bold">{text}</span>,
+	  [MARKS.ITALIC]: (text) => <span className="italic">{text}</span>,
+	},
+	renderNode: {
+	  [BLOCKS.PARAGRAPH]: (node, children) => (
+		<p className="mb-4 text-lg font-pp-light">{children}</p>
+	  ),
+	  [BLOCKS.HEADING_2]: (node, children) => (
+		<h2 className="text-3xl font-clash-regular mb-4 mt-8">{children}</h2>
+	  ),
+	  [BLOCKS.HEADING_3]: (node, children) => (
+		<h3 className="text-2xl font-clash-regular mb-3 mt-6">{children}</h3>
+	  ),
+	  [BLOCKS.UL_LIST]: (node, children) => (
+		<ul className="list-disc ml-6 mb-4 font-pp-light">{children}</ul>
+	  ),
+	  [BLOCKS.OL_LIST]: (node, children) => (
+		<ol className="list-decimal ml-6 mb-4 font-pp-light">{children}</ol>
+	  ),
+	  [BLOCKS.LIST_ITEM]: (node, children) => (
+		<li className="mb-2">{children}</li>
+	  ),
+	  [BLOCKS.QUOTE]: (node, children) => (
+		<blockquote className="border-l-4 border-gray-300 pl-4 italic my-4 font-pp-light">{children}</blockquote>
+	  ),
+	  'embedded-asset-block': (node) => (
+		<div className="my-8">
+		  <img 
+			className="w-full" 
+			src={`https:${node.data.target.fields.file.url}`}
+			alt={node.data.target.fields.description || ''}
+		  />
+		</div>
+	  ),
+	  [INLINES.HYPERLINK]: (node, children) => (
+		<a 
+		  href={node.data.uri}
+		  className="text-blue-600 hover:underline font-pp-light"
+		  target="_blank"
+		  rel="noopener noreferrer"
+		>
+		  {children}
+		</a>
+	  ),
+	}
+  }
 
-  },
-  {
-    id: 3,
-    title: "Magic Theatre — [Scenes \nfrom the Unconscious]",
-    type: "video-photo",
-    darkOverlay: false,
-    description: "Magic Theatre — [scenes from the unconscious] is a new solo work and multimedia live art show. This dreamlike contemporary performance expresses a deeply personal evocation of Queer/East Asian/Diaspora heartbreak... \n\nThrough putting the viewer in a dreamlike trance state, through using immersive FX, visual and audio effects, the work explores the dark side of the mind – and what it means to grow up without a sense of belonging. It engages with the overarching themes of marginalised identity and mental health by asking the question of who has the right to feel comfortable in 'normal' society. Themes of queer youth, ethnic-difference and belonging, and mental breakdown are explored in poetic sound and visceral imagery in the work.",
-    mainPhoto: require("../components/images/magic_theatre/main.jpg"),
-    mainMobilePhoto: require("../components/images/magic_theatre/mainmobile.png"),
-    videoUrls: [
-      "https://player.vimeo.com/video/382751816?badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479",
-    ],
-    photoUrls: [
-      require("../components/images/magic_theatre/M1.jpg"),
-      require("../components/images/magic_theatre/M2.jpg"),
-      require("../components/images/magic_theatre/M3.jpg"),
-      require("../components/images/magic_theatre/M4.jpg"),
-      require("../components/images/magic_theatre/M5.jpg"),
-      require("../components/images/magic_theatre/M6.jpg"),
-      require("../components/images/magic_theatre/M7.jpg"),
-      require("../components/images/magic_theatre/M8.jpg"),
-      require("../components/images/magic_theatre/M9.jpg"),
-      require("../components/images/magic_theatre/M10.jpg"),
-      require("../components/images/magic_theatre/M11.jpg"),
-      require("../components/images/magic_theatre/M12.jpg"),
-      require("../components/images/magic_theatre/M13.jpg"),
-      require("../components/images/magic_theatre/M14.jpg"),
-      require("../components/images/magic_theatre/M15.jpg"),
-    ],
-    endText1: "1-6.  Magic Theatre – [scenes from the unconscious], 2019.  Production stills.  Centre for Contemporary Arts, Glasgow, Scotland.  Photographer: Jassy Earl. \n\n7-10.  Magic Theatre – [scenes from the unconscious], 2019.  Production stills.  Queer Theory, Glasgow, Scotland.  Photographer: Tiu Makkonen. \n\n11-15.  Magic Theatre – [scenes from the unconscious], 2024.  Production stills.  Buddies in Bad Times, Toronto, Canada.  Photographer: Henry Chan."
-  },
+const projectData = await getProjects();
 
-  {
-    id: 5,
-    title: "Untitled Dances",
-    type: "video-photo",
-    darkOverlay: false,
-    mainPhoto: require("../components/images/untitled_dances/main.jpg"),
-    mainMobilePhoto: require("../components/images/untitled_dances/mainmobile.png"),
-    videoUrls: [
-      "https://player.vimeo.com/video/515053901?badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479",
-      "https://player.vimeo.com/video/762062302?h=4b858615ba&amp;badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479"
-    ],
-  },
-  {
-    id: 6,
-    title: "Comedown",
-    type: "video-photo",
-    darkOverlay: true,
-    mainPhoto: require("../components/images/comedown/main.jpg"),
-    mainMobilePhoto: require("../components/images/comedown/mainmobile.png"),
-    videoUrls: [
-      "https://player.vimeo.com/video/523537711?h=dcc793a3be&amp;badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479",
-    ],
-  },
-  {
-    id: 7,
-    title: "Strangers",
-    type: "photo",
-    darkOverlay: true,
-    mainPhoto: require("../components/images/strangers/main.jpg"),
-    mainMobilePhoto: require("../components/images/strangers/mainmobile.png"),
-    photoUrls: [
-      require("../components/images/strangers/S1.jpg"),
-      require("../components/images/strangers/S2.jpg"),
-      require("../components/images/strangers/S3.jpg"),
-      require("../components/images/strangers/S4.jpg"),
-      require("../components/images/strangers/S5.jpg"),
-      require("../components/images/strangers/S6.jpg"),
-      require("../components/images/strangers/S7.jpg"),
-      require("../components/images/strangers/S8.jpg"),
-      require("../components/images/strangers/S9.jpg"),
-      require("../components/images/strangers/S10.jpg"),
-      require("../components/images/strangers/S11.jpg"),
-      require("../components/images/strangers/S12.jpg"),
-      require("../components/images/strangers/S13.jpg"),
-      require("../components/images/strangers/S14.jpg"),
-      require("../components/images/strangers/S15.jpg"),
-      require("../components/images/strangers/S16.jpg"),
-      require("../components/images/strangers/S17.jpg"),
-      require("../components/images/strangers/S18.jpg"),
-      require("../components/images/strangers/S19.jpg"),
-      require("../components/images/strangers/S20.jpg"),
-      require("../components/images/strangers/S21.jpg"),
-      require("../components/images/strangers/S22.jpg"),
-      require("../components/images/strangers/S23.jpg"),
-      require("../components/images/strangers/S24.jpg"),
-      require("../components/images/strangers/S25.jpg"),
-      require("../components/images/strangers/S26.jpg"),
-      require("../components/images/strangers/S27.jpg"),
-      require("../components/images/strangers/S28.jpg"),
-      require("../components/images/strangers/S29.jpg"),
-      require("../components/images/strangers/S30.jpg"),
-    ],
-    description: `In this performance work and photographic series, I spent a full day each with strangers I met through the internet – documenting and photographing their daily life. I returned a week later, and left them the photos I had taken as promised – along with an unexpected gift on the stranger's doorstep, as a memory of the time we had spent together. \n\nThis work explores what it means to encounter another person, and how we can be seen to be strangers – even to ourselves. The taboo of the stranger in our society is a pillar of the fear of the Other. However, rather than just 'making familiar', the piece aims to retain and embrace the sensation of strangeness – while at the same time signalling a possibility of bridging understanding and connection between individuals in a lonely society.`,
-  },
+console.log(projectData);
 
-  {
-    id: 8,
-    title: "Who are you?",
-    type: "video-photo",
-    darkOverlay: false,
-    mainPhoto: require("../components/images/who_are_you/main.png"),
-    mainMobilePhoto: require("../components/images/who_are_you/mainmobile.png"),
-    videoUrls: [
-      "https://player.vimeo.com/video/83840452?h=d2e5bcb216&amp;badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479",
-    ],
-    description: `The title of this documentary performance/video art piece evokes existential questions regarding our identity. Interviewing persons living in the same residential building – I asked them to talk about their lives in the third person. When seen from this perspective, the individual or formerly 'I' becomes like a character in a story, or a fictional entity… \n\nThis work examines interiors both psychological and architectural. The figures of the interlocutors as well as the interviewer are largely obscured or hidden from direct view in the enclosed framings of the camera space – an estrangement of 'self' and self-discourse, despite the highly personal insights shared.`,
-  },
+const projects = [];
 
+projectData.items.forEach((item, index) => {
+  projects.push(
   {
-    id: 9,
-    title: "Psycho Love / Magic Man",
-    type: "video-photo",
-    darkOverlay: true,
-    mainPhoto: require("../components/images/psycho_love/main.jpg"),
-    mainMobilePhoto: require("../components/images/psycho_love/mainmobile.png"),
-    videoUrls: [
-      "https://player.vimeo.com/video/454060904?h=5d59e9a152&amp;badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479",
-    ],
-    photoUrls: [
-      require("../components/images/psycho_love/PL1.jpg"),
-      require("../components/images/psycho_love/PL2.jpg"),
-      require("../components/images/psycho_love/PL3.jpg"),
-      require("../components/images/psycho_love/PL4.jpg"),
-      require("../components/images/psycho_love/PL5.jpg"),
-      require("../components/images/psycho_love/PL6.jpg"),
-      require("../components/images/psycho_love/PL7.jpg"),
-      require("../components/images/psycho_love/PL8.jpg"),
-      require("../components/images/psycho_love/PL9.jpg"),
-    ],
-    description: `In this performance installation and intervention in an art gallery window-front looking out onto Fifth Avenue in NYC – I went on an intensive, psychedelic journey. The improvisational nature of this performance relied on not knowing – and not planning in advance what might happen; surrendering inhibitions through this act of channelling internal feelings and evoking a kind of contemporary shamanism. \n\nFramed within the context of disrupting the urban main street – the work is an attempt to bridge the self/Other divide and this disconnect between people in our society of consumer apathy. The window functions at times as its psychoanalytical equivalent, the magic mirror. The fundamental impasse of remaining behind the glass window in an act of expressive-public feeling is nevertheless a poignant metaphor for the ambiguities or difficulties of communication. At the same time I still remain hopeful, establishing unexpected emotional connections with passersby on the street…`,
-  },
+    id: index + 1,
+    title: item.fields.title,
+    type: item.fields.projectType,
+    darkOverlay: item.fields.darkOverlay,
+    description: documentToReactComponents(item.fields.description, options),
+    mainPhoto: item.fields.backgroundImage.fields.file.url,
+    mainMobilePhoto: item.fields.mobileBgImage.fields.file.url,
+    videoUrls: item.fields.vimeoLinks ? item.fields.vimeoLinks.map(vimeoLink => `${vimeoLink}`) : [],
+    photoUrls: item.fields.photos ? item.fields.photos.map(photo => `https:${photo.fields.file.url}`) : [],
+    endText1: documentToReactComponents(item.fields.bottomText, options),
 
-  {
-    id: 10,
-    title: "Why are we unhappy?",
-    type: "video-photo",
-    darkOverlay: true,
-    mainPhoto: require("../components/images/why_are_we_unhappy/main.jpg"),
-    mainMobilePhoto: require("../components/images/why_are_we_unhappy/mainmobile.png"),
-    audioUrl: "https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/tracks/56391386&color=%232b251f&auto_play=false&hide_related=false&show_comments=true&show_user=true&show_reposts=false&show_teaser=true&visual=true",
-        photoUrls: [
-      require("../components/images/why_are_we_unhappy/WH1.jpg"),
-      require("../components/images/why_are_we_unhappy/WH2.jpg"),
-      require("../components/images/why_are_we_unhappy/WH3.jpg"),
-      require("../components/images/why_are_we_unhappy/WH4.jpg"),
-      require("../components/images/why_are_we_unhappy/WH5.jpg"),
-      require("../components/images/why_are_we_unhappy/WH6.jpg"),
-      require("../components/images/why_are_we_unhappy/WH7.jpg"),
-      require("../components/images/why_are_we_unhappy/WH8.jpg"),
-      require("../components/images/why_are_we_unhappy/WH9.jpg"),
-    ],
-    description: `This photographic documentary project was an interview-based intervention in my hometown of Melbourne, Australia. The resulting installation and exhibition, encompassing portraits, audio and textual plaques memorialising the everyday thoughts and experiences of individuals – stands in stark contrast to the colonialist nature of official A.N.Z.A.C. war memorials of the nation. Connecting rather to the subjective experience of the city's diverse contemporary inhabitants, this project seeks what we share in common in our search for happiness or meaning in our lives. \n\nThe work developed from interviewing chosen participants in Federation Square, the central city arts-hub of symbolic Australian cultural identity – as well as in vox-pop style encounters in various off-sites – including at a school, business office, shopping centre, casino and S&M club, among other locations I visited. Interviewees were all asked the same opening question: "Why are you unhappy?" Disrupting false narratives of 'happy multiculturalism', this project worked instead to memorialise the subversive everyday. The conversations (documented through a woven-sound installation in the exhibition space) explore common threads of human experience cutting across different subcultures and identity groups. The piece gestures to the potential of opening up dialogue with others about what remains unspoken, uncovering what people do not usually talk about.`,
-  },
+    // endText1: "1-2.  Cloud States, 2023.  Video stills. Cove Park, Helensburgh, Scotland. \n\n3-4.  Cloud States, 2023.  Installation view.  French Street, Glasgow, Scotland.",
+  });
+});
+// const projects = [
+//   {
+//     id: 1,
+//     title: "Cloud States",
+//     type: "video-photo",
+//     darkOverlay: false,
+//     description: "Cloud States is an upcoming multi-disciplinary performance art work mapping queer migrant belonging. Working with movement, immersive installation, multimedia and video art, Cloud States includes a series of films shot on location at Cove Park in Scotland. \n\nThe films explore personal experiences of 'lost-wandering' – and the existential search for a queer migrant belonging in remote country landscapes through the excavation of internal/external wildernesses. Cloud States seeks to explore the meeting point of internal and external realms, proposing a return as such to the originary softness and vulnerability of the body (through exploring internal states of Nirvana).",
+//     mainPhoto: projectData.fields.backgroundImage.fields.file.url,
+//     mainMobilePhoto: projectData.fields.backgroundImageMobile.fields.file.url,
+//     videoUrls: [
+//       "https://player.vimeo.com/video/1071095870?badge=0&amp",
+//       "https://player.vimeo.com/video/903553460?h=dc70b0b9e5&amp"
+//     ],
+//     photoUrls: [
+//       require("../components/images/cloud_states/C1.jpg"),
+//       require("../components/images/cloud_states/C2.jpg"),
+//       require("../components/images/cloud_states/C3.jpg"),
+//       require("../components/images/cloud_states/C4.jpg")
+//     ],
+//     endText1: "1-2.  Cloud States, 2023.  Video stills. Cove Park, Helensburgh, Scotland. \n\n3-4.  Cloud States, 2023.  Installation view.  French Street, Glasgow, Scotland.",
+//   },
+//   {
+//     id: 2,
+//     title: "Weathervanes",
+//     type: "video-photo",
+//     darkOverlay: false,
+//     description: "Weathervanes is an immersive ritual dance-theatre experience that tunes into the collective psyche to create a dreaming state of mind; an architecture of queer futurity. Drawing on Western art history and classical depictions of the nude body in paintings and figurative sculpture, Weathervanes asks us to reframe concepts of the beautiful and what is holy through re-envisioning contemporary 'living sculptures' that centre Queer People of Colour. \n\nThe performance-installation seeks to restore our connection to inner-worlds; in exploring the notion of 'original innocence' in the Garden of Eden (before the fall of man) – this work opposes fear, shame and denial of our fleshly bodies through forming a womb-like collective dream space.",
+//     mainPhoto: require("../components/images/weathervanes/compressed/main.jpg"),
+//     mainMobilePhoto: require("../components/images/weathervanes/compressed/mainmobile.png"),
+//     videoUrls: [
+//       "https://player.vimeo.com/video/845034913?badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479",
+//       "https://player.vimeo.com/video/452704100?badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479",
+//     ],
+//     photoUrls: [
+//       require("../components/images/weathervanes/compressed/W1.jpg"),
+//       require("../components/images/weathervanes/compressed/W2.jpg"),
+//       require("../components/images/weathervanes/compressed/W3.jpg"),
+//       require("../components/images/weathervanes/compressed/W4.jpg"),
+//       require("../components/images/weathervanes/compressed/W5.jpg"),
+//       require("../components/images/weathervanes/compressed/W6.jpg"),
+//       require("../components/images/weathervanes/compressed/W7.jpg"),
+//       require("../components/images/weathervanes/compressed/W8.jpg"),
+//       require("../components/images/weathervanes/compressed/W9.jpg"),
+//       require("../components/images/weathervanes/compressed/W10.jpg"),
+//       require("../components/images/weathervanes/compressed/W11.jpg"),
+//       require("../components/images/weathervanes/compressed/W12.jpg"),
+//       require("../components/images/weathervanes/compressed/W13.jpg"),
+//       require("../components/images/weathervanes/compressed/W14.jpg"),
+//       require("../components/images/weathervanes/compressed/W15.jpg"),
+//       require("../components/images/weathervanes/compressed/W16.jpg"),
+//     ],
+//     endText1: " 1-5.  Weathervanes, 2023.  Production stills.  Summerhall, Edinburgh, Scotland.  Photographer: Brian Hartley. \n\n6-14.  Weathervanes, 2021.  Production stills.  Tramway, Glasgow, Scotland.  Photographer: Brian Hartley. \n\n15-16.  Weathervanes, 2020.  Production stills.  Glasgow, Scotland.  Photographer: Julianna Laird."
 
-  {
-    id: 11,
-    title: "Where is jesus? | I love jesus",
-    type: "video-photo",
-    darkOverlay: false,
-    mainPhoto: require("../components/images/jesus/main.jpg"),
-    mainMobilePhoto: require("../components/images/jesus/mainmobile.png"),
-    videoUrls: [
-      "https://player.vimeo.com/video/454067570?badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479",
-      "https://player.vimeo.com/video/24753251?h=1377af1b8b&amp;badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479",
-    ],
-    description: `The two-related works, 'Where is Jesus?' and 'I Love Jesus', can be seen in conversation with each other. Both works play with the complexity of faith and personal belief – privileging the subjective and often sacrilegious experiences of people over religious doctrine. The first piece is a 'performative-documentary' that follows an Iranian immigrant (Ava Ansari) playing a naïve character searching for Jesus in the East Village, NYC. The second is a solo performance that finds a more personal relationship to objects of reverence, belief and spiritual practice, queering the meaning and experience of faith. \n\nBoth works explore the disconnect between individual experiences and any sort of overarching systems of doctrinal orthodoxy. 'Where is Jesus?' is tinged with both absurdist humour and a melancholic awareness of the existentialist predicament of our times. 'I Love Jesus' stages a more direct confrontation with religious orthodoxy, looking at the contemporary culture wars in America and discussions around obscenity, taboo and sanitisation in the arts. `,
-  },
+//   },
+//   {
+//     id: 3,
+//     title: "Magic Theatre — [Scenes \nfrom the Unconscious]",
+//     type: "video-photo",
+//     darkOverlay: false,
+//     description: "Magic Theatre — [scenes from the unconscious] is a new solo work and multimedia live art show. This dreamlike contemporary performance expresses a deeply personal evocation of Queer/East Asian/Diaspora heartbreak... \n\nThrough putting the viewer in a dreamlike trance state, through using immersive FX, visual and audio effects, the work explores the dark side of the mind – and what it means to grow up without a sense of belonging. It engages with the overarching themes of marginalised identity and mental health by asking the question of who has the right to feel comfortable in 'normal' society. Themes of queer youth, ethnic-difference and belonging, and mental breakdown are explored in poetic sound and visceral imagery in the work.",
+//     mainPhoto: require("../components/images/magic_theatre/main.jpg"),
+//     mainMobilePhoto: require("../components/images/magic_theatre/mainmobile.png"),
+//     videoUrls: [
+//       "https://player.vimeo.com/video/382751816?badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479",
+//     ],
+//     photoUrls: [
+//       require("../components/images/magic_theatre/M1.jpg"),
+//       require("../components/images/magic_theatre/M2.jpg"),
+//       require("../components/images/magic_theatre/M3.jpg"),
+//       require("../components/images/magic_theatre/M4.jpg"),
+//       require("../components/images/magic_theatre/M5.jpg"),
+//       require("../components/images/magic_theatre/M6.jpg"),
+//       require("../components/images/magic_theatre/M7.jpg"),
+//       require("../components/images/magic_theatre/M8.jpg"),
+//       require("../components/images/magic_theatre/M9.jpg"),
+//       require("../components/images/magic_theatre/M10.jpg"),
+//       require("../components/images/magic_theatre/M11.jpg"),
+//       require("../components/images/magic_theatre/M12.jpg"),
+//       require("../components/images/magic_theatre/M13.jpg"),
+//       require("../components/images/magic_theatre/M14.jpg"),
+//       require("../components/images/magic_theatre/M15.jpg"),
+//     ],
+//     endText1: "1-6.  Magic Theatre – [scenes from the unconscious], 2019.  Production stills.  Centre for Contemporary Arts, Glasgow, Scotland.  Photographer: Jassy Earl. \n\n7-10.  Magic Theatre – [scenes from the unconscious], 2019.  Production stills.  Queer Theory, Glasgow, Scotland.  Photographer: Tiu Makkonen. \n\n11-15.  Magic Theatre – [scenes from the unconscious], 2024.  Production stills.  Buddies in Bad Times, Toronto, Canada.  Photographer: Henry Chan."
+//   },
 
-  {
-    id: 12,
-    title: "Dancing by myself in public",
-    type: "video-photo",
-    darkOverlay: false,
-    mainPhoto: require("../components/images/dancing/D2.jpg"),
-    mainMobilePhoto: require("../components/images/dancing/D2.jpg"),
-    videoUrls: [
-      "https://player.vimeo.com/video/454065624?h=1ed8abb93a&amp;badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479",
-      "https://player.vimeo.com/video/454079432?h=7f5ec2b51b&amp;badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479",
-    ],
-    // photoUrls: [
-    //   require("../components/images/dancing/D1.jpg"),
-    //   require("../components/images/dancing/D2.jpg"),
-    // ],
-    description: `Working with non-professional dancers to make expressive/personal narratives in solo movement pieces in public spaces in New York City, this work explores the possibility of reclaiming the conditions of the 'commons' and public space in the post-9/11 security state. \n\nA performance and video art series of guerilla interventions, the almost hallucinatory dances come in and out of view like a subjective dream – interrogating through practice what it is to bring the otherwise private/sub-conscious dream world of the individual into public view. The meeting of the private and public spheres in this work explores the liberating potential of dance and personal movement practices through deterritorialising interventions.`,
-  },
+//   {
+//     id: 5,
+//     title: "Untitled Dances",
+//     type: "video-photo",
+//     darkOverlay: false,
+//     mainPhoto: require("../components/images/untitled_dances/main.jpg"),
+//     mainMobilePhoto: require("../components/images/untitled_dances/mainmobile.png"),
+//     videoUrls: [
+//       "https://player.vimeo.com/video/515053901?badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479",
+//       "https://player.vimeo.com/video/762062302?h=4b858615ba&amp;badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479"
+//     ],
+//   },
+//   {
+//     id: 6,
+//     title: "Comedown",
+//     type: "video-photo",
+//     darkOverlay: true,
+//     mainPhoto: require("../components/images/comedown/main.jpg"),
+//     mainMobilePhoto: require("../components/images/comedown/mainmobile.png"),
+//     videoUrls: [
+//       "https://player.vimeo.com/video/523537711?h=dcc793a3be&amp;badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479",
+//     ],
+//   },
+//   {
+//     id: 7,
+//     title: "Strangers",
+//     type: "photo",
+//     darkOverlay: true,
+//     mainPhoto: require("../components/images/strangers/main.jpg"),
+//     mainMobilePhoto: require("../components/images/strangers/mainmobile.png"),
+//     photoUrls: [
+//       require("../components/images/strangers/S1.jpg"),
+//       require("../components/images/strangers/S2.jpg"),
+//       require("../components/images/strangers/S3.jpg"),
+//       require("../components/images/strangers/S4.jpg"),
+//       require("../components/images/strangers/S5.jpg"),
+//       require("../components/images/strangers/S6.jpg"),
+//       require("../components/images/strangers/S7.jpg"),
+//       require("../components/images/strangers/S8.jpg"),
+//       require("../components/images/strangers/S9.jpg"),
+//       require("../components/images/strangers/S10.jpg"),
+//       require("../components/images/strangers/S11.jpg"),
+//       require("../components/images/strangers/S12.jpg"),
+//       require("../components/images/strangers/S13.jpg"),
+//       require("../components/images/strangers/S14.jpg"),
+//       require("../components/images/strangers/S15.jpg"),
+//       require("../components/images/strangers/S16.jpg"),
+//       require("../components/images/strangers/S17.jpg"),
+//       require("../components/images/strangers/S18.jpg"),
+//       require("../components/images/strangers/S19.jpg"),
+//       require("../components/images/strangers/S20.jpg"),
+//       require("../components/images/strangers/S21.jpg"),
+//       require("../components/images/strangers/S22.jpg"),
+//       require("../components/images/strangers/S23.jpg"),
+//       require("../components/images/strangers/S24.jpg"),
+//       require("../components/images/strangers/S25.jpg"),
+//       require("../components/images/strangers/S26.jpg"),
+//       require("../components/images/strangers/S27.jpg"),
+//       require("../components/images/strangers/S28.jpg"),
+//       require("../components/images/strangers/S29.jpg"),
+//       require("../components/images/strangers/S30.jpg"),
+//     ],
+//     description: `In this performance work and photographic series, I spent a full day each with strangers I met through the internet – documenting and photographing their daily life. I returned a week later, and left them the photos I had taken as promised – along with an unexpected gift on the stranger's doorstep, as a memory of the time we had spent together. \n\nThis work explores what it means to encounter another person, and how we can be seen to be strangers – even to ourselves. The taboo of the stranger in our society is a pillar of the fear of the Other. However, rather than just 'making familiar', the piece aims to retain and embrace the sensation of strangeness – while at the same time signalling a possibility of bridging understanding and connection between individuals in a lonely society.`,
+//   },
 
-  {
-    id: 13,
-    title: "From the 'Pink' series",
-    type: "video-photo",
-    darkOverlay: true,
-    mainPhoto: require("../components/images/pink/main.jpg"),
-    mainMobilePhoto: require("../components/images/pink/mainmobile.png"),
-    objectPosition: 'right-center', // Using right-center positioning
-    photoUrls: [
-      require("../components/images/pink/P1.jpg"),
-      require("../components/images/pink/P2.jpg"),
-      require("../components/images/pink/P3.jpg"),
-      require("../components/images/pink/P4.jpg"),
-      require("../components/images/pink/P5.png"),
-      require("../components/images/pink/P6.jpg"),
-      require("../components/images/pink/P7.jpg"),
-      require("../components/images/pink/P8.jpg"),
-      require("../components/images/pink/P9.jpg"),
-    ],
-    description: `The pink dress is an abstract representation of a sensuous feeling, like melancholia – and a personal orientation in the work. This series of self-portraits taken in Melbourne, Australia where I grew up express a sense of disjunction with place – interweaving feelings of loneliness but also wry humour in the existential framing of the pictures. The thematics of identity and belonging is omnipresent in this series that features traditional photographic prints, as well as postcards in which the self-portraits are juxtaposed against stereotypical Australian proverbs. This particular framing revisits the ingrained nationalism within society, and which bodies it excludes. \n\nThe exhibition display of one of the portraits on a public street billboard is an invitation for passersby to view something beautifully strange/out of the ordinary in the everyday context. This vintage-style portrait is taken on a Melbourne tram. This series of work deconstructs notions of gender/sexuality/race and configurations of identification and belonging. From the 'Pink' series represents the disjunction of feeling distant from a place one has always been, and explores ideas of what is 'home' and who belongs – and who does not feel at home.`,
-  },
-];
+//   {
+//     id: 8,
+//     title: "Who are you?",
+//     type: "video-photo",
+//     darkOverlay: false,
+//     mainPhoto: require("../components/images/who_are_you/main.png"),
+//     mainMobilePhoto: require("../components/images/who_are_you/mainmobile.png"),
+//     videoUrls: [
+//       "https://player.vimeo.com/video/83840452?h=d2e5bcb216&amp;badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479",
+//     ],
+//     description: `The title of this documentary performance/video art piece evokes existential questions regarding our identity. Interviewing persons living in the same residential building – I asked them to talk about their lives in the third person. When seen from this perspective, the individual or formerly 'I' becomes like a character in a story, or a fictional entity… \n\nThis work examines interiors both psychological and architectural. The figures of the interlocutors as well as the interviewer are largely obscured or hidden from direct view in the enclosed framings of the camera space – an estrangement of 'self' and self-discourse, despite the highly personal insights shared.`,
+//   },
+
+//   {
+//     id: 9,
+//     title: "Psycho Love / Magic Man",
+//     type: "video-photo",
+//     darkOverlay: true,
+//     mainPhoto: require("../components/images/psycho_love/main.jpg"),
+//     mainMobilePhoto: require("../components/images/psycho_love/mainmobile.png"),
+//     videoUrls: [
+//       "https://player.vimeo.com/video/454060904?h=5d59e9a152&amp;badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479",
+//     ],
+//     photoUrls: [
+//       require("../components/images/psycho_love/PL1.jpg"),
+//       require("../components/images/psycho_love/PL2.jpg"),
+//       require("../components/images/psycho_love/PL3.jpg"),
+//       require("../components/images/psycho_love/PL4.jpg"),
+//       require("../components/images/psycho_love/PL5.jpg"),
+//       require("../components/images/psycho_love/PL6.jpg"),
+//       require("../components/images/psycho_love/PL7.jpg"),
+//       require("../components/images/psycho_love/PL8.jpg"),
+//       require("../components/images/psycho_love/PL9.jpg"),
+//     ],
+//     description: `In this performance installation and intervention in an art gallery window-front looking out onto Fifth Avenue in NYC – I went on an intensive, psychedelic journey. The improvisational nature of this performance relied on not knowing – and not planning in advance what might happen; surrendering inhibitions through this act of channelling internal feelings and evoking a kind of contemporary shamanism. \n\nFramed within the context of disrupting the urban main street – the work is an attempt to bridge the self/Other divide and this disconnect between people in our society of consumer apathy. The window functions at times as its psychoanalytical equivalent, the magic mirror. The fundamental impasse of remaining behind the glass window in an act of expressive-public feeling is nevertheless a poignant metaphor for the ambiguities or difficulties of communication. At the same time I still remain hopeful, establishing unexpected emotional connections with passersby on the street…`,
+//   },
+
+//   {
+//     id: 10,
+//     title: "Why are we unhappy?",
+//     type: "video-photo",
+//     darkOverlay: true,
+//     mainPhoto: require("../components/images/why_are_we_unhappy/main.jpg"),
+//     mainMobilePhoto: require("../components/images/why_are_we_unhappy/mainmobile.png"),
+//     audioUrl: "https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/tracks/56391386&color=%232b251f&auto_play=false&hide_related=false&show_comments=true&show_user=true&show_reposts=false&show_teaser=true&visual=true",
+//         photoUrls: [
+//       require("../components/images/why_are_we_unhappy/WH1.jpg"),
+//       require("../components/images/why_are_we_unhappy/WH2.jpg"),
+//       require("../components/images/why_are_we_unhappy/WH3.jpg"),
+//       require("../components/images/why_are_we_unhappy/WH4.jpg"),
+//       require("../components/images/why_are_we_unhappy/WH5.jpg"),
+//       require("../components/images/why_are_we_unhappy/WH6.jpg"),
+//       require("../components/images/why_are_we_unhappy/WH7.jpg"),
+//       require("../components/images/why_are_we_unhappy/WH8.jpg"),
+//       require("../components/images/why_are_we_unhappy/WH9.jpg"),
+//     ],
+//     description: `This photographic documentary project was an interview-based intervention in my hometown of Melbourne, Australia. The resulting installation and exhibition, encompassing portraits, audio and textual plaques memorialising the everyday thoughts and experiences of individuals – stands in stark contrast to the colonialist nature of official A.N.Z.A.C. war memorials of the nation. Connecting rather to the subjective experience of the city's diverse contemporary inhabitants, this project seeks what we share in common in our search for happiness or meaning in our lives. \n\nThe work developed from interviewing chosen participants in Federation Square, the central city arts-hub of symbolic Australian cultural identity – as well as in vox-pop style encounters in various off-sites – including at a school, business office, shopping centre, casino and S&M club, among other locations I visited. Interviewees were all asked the same opening question: "Why are you unhappy?" Disrupting false narratives of 'happy multiculturalism', this project worked instead to memorialise the subversive everyday. The conversations (documented through a woven-sound installation in the exhibition space) explore common threads of human experience cutting across different subcultures and identity groups. The piece gestures to the potential of opening up dialogue with others about what remains unspoken, uncovering what people do not usually talk about.`,
+//   },
+
+//   {
+//     id: 11,
+//     title: "Where is jesus? | I love jesus",
+//     type: "video-photo",
+//     darkOverlay: false,
+//     mainPhoto: require("../components/images/jesus/main.jpg"),
+//     mainMobilePhoto: require("../components/images/jesus/mainmobile.png"),
+//     videoUrls: [
+//       "https://player.vimeo.com/video/454067570?badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479",
+//       "https://player.vimeo.com/video/24753251?h=1377af1b8b&amp;badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479",
+//     ],
+//     description: `The two-related works, 'Where is Jesus?' and 'I Love Jesus', can be seen in conversation with each other. Both works play with the complexity of faith and personal belief – privileging the subjective and often sacrilegious experiences of people over religious doctrine. The first piece is a 'performative-documentary' that follows an Iranian immigrant (Ava Ansari) playing a naïve character searching for Jesus in the East Village, NYC. The second is a solo performance that finds a more personal relationship to objects of reverence, belief and spiritual practice, queering the meaning and experience of faith. \n\nBoth works explore the disconnect between individual experiences and any sort of overarching systems of doctrinal orthodoxy. 'Where is Jesus?' is tinged with both absurdist humour and a melancholic awareness of the existentialist predicament of our times. 'I Love Jesus' stages a more direct confrontation with religious orthodoxy, looking at the contemporary culture wars in America and discussions around obscenity, taboo and sanitisation in the arts. `,
+//   },
+
+//   {
+//     id: 12,
+//     title: "Dancing by myself in public",
+//     type: "video-photo",
+//     darkOverlay: false,
+//     mainPhoto: require("../components/images/dancing/D2.jpg"),
+//     mainMobilePhoto: require("../components/images/dancing/D2.jpg"),
+//     videoUrls: [
+//       "https://player.vimeo.com/video/454065624?h=1ed8abb93a&amp;badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479",
+//       "https://player.vimeo.com/video/454079432?h=7f5ec2b51b&amp;badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479",
+//     ],
+//     // photoUrls: [
+//     //   require("../components/images/dancing/D1.jpg"),
+//     //   require("../components/images/dancing/D2.jpg"),
+//     // ],
+//     description: `Working with non-professional dancers to make expressive/personal narratives in solo movement pieces in public spaces in New York City, this work explores the possibility of reclaiming the conditions of the 'commons' and public space in the post-9/11 security state. \n\nA performance and video art series of guerilla interventions, the almost hallucinatory dances come in and out of view like a subjective dream – interrogating through practice what it is to bring the otherwise private/sub-conscious dream world of the individual into public view. The meeting of the private and public spheres in this work explores the liberating potential of dance and personal movement practices through deterritorialising interventions.`,
+//   },
+
+//   {
+//     id: 13,
+//     title: "From the 'Pink' series",
+//     type: "video-photo",
+//     darkOverlay: true,
+//     mainPhoto: require("../components/images/pink/main.jpg"),
+//     mainMobilePhoto: require("../components/images/pink/mainmobile.png"),
+//     objectPosition: 'right-center', // Using right-center positioning
+//     photoUrls: [
+//       require("../components/images/pink/P1.jpg"),
+//       require("../components/images/pink/P2.jpg"),
+//       require("../components/images/pink/P3.jpg"),
+//       require("../components/images/pink/P4.jpg"),
+//       require("../components/images/pink/P5.png"),
+//       require("../components/images/pink/P6.jpg"),
+//       require("../components/images/pink/P7.jpg"),
+//       require("../components/images/pink/P8.jpg"),
+//       require("../components/images/pink/P9.jpg"),
+//     ],
+//     description: `The pink dress is an abstract representation of a sensuous feeling, like melancholia – and a personal orientation in the work. This series of self-portraits taken in Melbourne, Australia where I grew up express a sense of disjunction with place – interweaving feelings of loneliness but also wry humour in the existential framing of the pictures. The thematics of identity and belonging is omnipresent in this series that features traditional photographic prints, as well as postcards in which the self-portraits are juxtaposed against stereotypical Australian proverbs. This particular framing revisits the ingrained nationalism within society, and which bodies it excludes. \n\nThe exhibition display of one of the portraits on a public street billboard is an invitation for passersby to view something beautifully strange/out of the ordinary in the everyday context. This vintage-style portrait is taken on a Melbourne tram. This series of work deconstructs notions of gender/sexuality/race and configurations of identification and belonging. From the 'Pink' series represents the disjunction of feeling distant from a place one has always been, and explores ideas of what is 'home' and who belongs – and who does not feel at home.`,
+//   },
+// ];
 
 export default projects; 

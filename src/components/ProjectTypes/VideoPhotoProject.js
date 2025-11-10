@@ -159,14 +159,14 @@ const VideoPhotoProject = ({ project }) => {
           <>
             {project.description && (
               <div className="project-description">
-                <p style={{ whiteSpace: 'pre-line' }}>{project.description}</p>
+                <div style={{ whiteSpace: 'pre-line' }}>{project.description}</div>
               </div>
             )}
             {project.endText1 && (
               <>
                 <div className="divider-line"></div>
                 <div className="project-end-text">
-                  <p style={{ whiteSpace: 'pre-line' }}>{project.endText1}</p>
+                  <div style={{ whiteSpace: 'pre-line' }}>{project.endText1}</div>
                 </div>
               </>
             )}
@@ -220,7 +220,7 @@ const VideoPhotoProject = ({ project }) => {
               />
               <div style={{ display: "flex", alignItems: "center", gap: 16, padding: "10px 0 10px 0"}}>
                 <button style={{width: "100px"}}  onClick={showPrev} className="nav-button">Previous</button>
-                <span style={{ color: "#fff", width: isMobile ? "50px" : "40px", textAlign: "center" }}>{currentPhotoIndex + 1} / {project.photoUrls.length}</span>
+                <span style={{ color: "#fff", textAlign: "center" }}>{currentPhotoIndex + 1} / {project.photoUrls.length}</span>
                 <button style={{width: "100px"}} onClick={showNext} className="nav-button">Next</button>
               </div>
               

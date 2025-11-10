@@ -153,7 +153,7 @@ export default function Contact() {
 		</div>
 		<div className="contact-container">
 			<div className="contact-content">
-				<h1>Contact Us</h1>
+				<h1>Contact</h1>
 				<div className="contact-form-container">
 					{renderFormContent()}
 				</div>

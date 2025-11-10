@@ -4,13 +4,15 @@ import "./styles/Navbar.css";
 import SelectedWorkModal from "./SelectedWorkModal";
 import Logo from "./images/jianlogo.png";
 
-const Navbar = ({ setActiveSection, activeSection }) => {
+const Navbar = ({ setActiveSection, activeSection, projectsData }) => {
 	const [activeLink, setActiveLink] = useState(null);
 	const [isScrolled, setIsScrolled] = useState(false);
 	const [isSelectedWorkModalOpen, setIsSelectedWorkModalOpen] = useState(false);
 	const [isModalClosing, setIsModalClosing] = useState(false);
 	const [isMenuOpen, setIsMenuOpen] = useState(false);
 	const menuRef = useRef(null);
+
+	
 
 	useEffect(() => {
 		const handleScroll = () => {
@@ -198,6 +200,7 @@ const Navbar = ({ setActiveSection, activeSection }) => {
 				isOpen={isSelectedWorkModalOpen} 
 				onClose={handleCloseModal}
 				setActiveSection={setActiveSection}
+				projectsData={projectsData}
 			/>
 		</>
 	);
