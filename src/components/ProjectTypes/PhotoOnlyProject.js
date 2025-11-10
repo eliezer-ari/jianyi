@@ -34,7 +34,11 @@ const PhotoOnlyProject = ({ project }) => {
 
   // Preload images
   useEffect(() => {
-    if (!hasPhotos) return;
+    if (!hasPhotos) {
+      // If no photos, set imagesLoaded to true immediately to prevent infinite loading state
+      setImagesLoaded(true);
+      return;
+    }
     
     const preloadImages = async () => {
       const imagePromises = project.photoUrls.map(url => {
@@ -144,7 +148,7 @@ const PhotoOnlyProject = ({ project }) => {
                   />
                 ))}
               </div>
-            ) : (
+            ) : hasPhotos ? (
               <div className="photo-display" style={{ 
                 position: 'relative', 
                 height: '400px',
@@ -154,19 +158,14 @@ const PhotoOnlyProject = ({ project }) => {
               }}>
                 <div>Loading...</div>
               </div>
-            )}
+            ) : null}
           </div>
 
           {project.description && (
             <div className="project-description-spc">
-              <p>
-                {project.description.split('\n').map((text, i) => (
-                  <React.Fragment key={i}>
-                    {text}
-                    {i < project.description.split('\n').length - 1 && <br />}
-                  </React.Fragment>
-                ))}
-              </p>
+              <div>
+                {project.description}
+              </div>
             </div>
           )}
         </div>

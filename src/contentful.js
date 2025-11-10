@@ -50,8 +50,9 @@ export const getPress = async () => {
 
 export const getProjects = async () => {
     const results = await getClient().getEntries({
-        content_type: 'project'
-      })
+        content_type: 'project',
+        order: 'fields.order'  // Sort by the 'order' field
+    })
   return results
 }
 // export const getEntryBySlug = async (slug, type) => {
