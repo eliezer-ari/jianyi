@@ -9,7 +9,7 @@ import Home from "./Home.js";
 import Contact from "./Contact.js";
 import VideoPhotoProject from "./ProjectTypes/VideoPhotoProject.js";
 import PhotoOnlyProject from "./ProjectTypes/PhotoOnlyProject.js";
-import projects from "../data/projects.js";
+import { transformProjectsData } from "../data/projects.js";
 import { ArrowLeft, ArrowRight } from 'lucide-react';
 
 import InstaLogo from "./images/instagram-new.png";
@@ -18,6 +18,7 @@ import { getBio, getPress, getProjects } from "../contentful.js";
 
 export default function Hero() {
 	const [projectsData, setProjectsData] = useState(null);
+	const [projects, setProjects] = useState([]);
 	const [bioData, setBioData] = useState(null);
 	const [pressData, setPressData] = useState(null);
 	const [activeSection, setActiveSection] = useState("Home");
@@ -51,7 +52,7 @@ export default function Hero() {
 				setPressData(pressResult);
 				// console.log(bio.fields); // If you need to log, do it here with bioResult
 			} catch (error) {
-				console.error("Failed to fetch bio:", error);
+				console.error("Failed to fetch press:", error);
 				// Handle error state if necessary
 			}
 		};
@@ -59,10 +60,16 @@ export default function Hero() {
 		const fetchProjectsData = async () => {
 			try {
 				const projectsResult = await getProjects();
-				
 				setProjectsData(projectsResult);
+				
+				// Transform the projects data into the format expected by components
+				const transformedProjects = transformProjectsData(projectsResult);
+				setProjects(transformedProjects);
+				console.log('Transformed projects:', transformedProjects);
 			} catch (error) {
 				console.error("Failed to fetch projects:", error);
+				// Set empty array on error to prevent crashes
+				setProjects([]);
 			}
 		};
 
@@ -234,7 +241,7 @@ export default function Hero() {
 		}
 		switch (sectionToShow) {
 			case "SelectedWork":
-				return <SelectedWork setNextSection={handleSectionChange} />;
+				return <SelectedWork setNextSection={handleSectionChange} projects={projects} />;
 			case "Bio":
 				return <Bio data={bioData} setNextSection={handleSectionChange} />;
 			case "Press":
@@ -266,7 +273,7 @@ export default function Hero() {
 						<Navbar
 							setActiveSection={handleSectionChange}
 							activeSection={activeSection}
-							projectsData={projectsData}
+							projects={projects}
 						/>
 					</div>
 					

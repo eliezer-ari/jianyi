@@ -1,8 +1,7 @@
 import React, { useRef, useEffect } from 'react';
 import './styles/SelectedWorkModal.css';
-import projects from '../data/projects';
 
-const SelectedWorkModal = ({ isOpen, onClose, setActiveSection }) => {
+const SelectedWorkModal = ({ isOpen, onClose, setActiveSection, projects = [] }) => {
   const overlayRef = useRef(null);
   
   if (!isOpen) return null;

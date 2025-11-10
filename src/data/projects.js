@@ -1,10 +1,9 @@
 // This is a placeholder data file for projects
 // In the future, this will be replaced with data from Contentful
-import { getProjects } from "../contentful.js";
 import { documentToReactComponents } from "@contentful/rich-text-react-renderer";
 import { BLOCKS, MARKS, INLINES } from '@contentful/rich-text-types'
 
-const options = {
+export const options = {
 	renderMark: {
 	  [MARKS.BOLD]: (text) => <span className="font-bold">{text}</span>,
 	  [MARKS.ITALIC]: (text) => <span className="italic">{text}</span>,
@@ -53,29 +52,63 @@ const options = {
 	}
   }
 
-const projectData = await getProjects();
+// Function to transform Contentful project data into projects array
+export const transformProjectsData = (projectData) => {
+  if (!projectData || !projectData.items || !Array.isArray(projectData.items)) {
+    console.warn('Invalid project data provided to transformProjectsData');
+    return [];
+  }
 
-console.log(projectData);
+  const projects = [];
 
-const projects = [];
+  projectData.items.forEach((item, index) => {
+    if (!item.fields) {
+      console.warn(`Project item at index ${index} has no fields, skipping`);
+      return;
+    }
 
-projectData.items.forEach((item, index) => {
-  projects.push(
-  {
-    id: index + 1,
-    title: item.fields.title,
-    type: item.fields.projectType,
-    darkOverlay: item.fields.darkOverlay,
-    description: documentToReactComponents(item.fields.description, options),
-    mainPhoto: item.fields.backgroundImage.fields.file.url,
-    mainMobilePhoto: item.fields.mobileBgImage.fields.file.url,
-    videoUrls: item.fields.vimeoLinks ? item.fields.vimeoLinks.map(vimeoLink => `${vimeoLink}`) : [],
-    photoUrls: item.fields.photos ? item.fields.photos.map(photo => `https:${photo.fields.file.url}`) : [],
-    endText1: documentToReactComponents(item.fields.bottomText, options),
-
-    // endText1: "1-2.  Cloud States, 2023.  Video stills. Cove Park, Helensburgh, Scotland. \n\n3-4.  Cloud States, 2023.  Installation view.  French Street, Glasgow, Scotland.",
+    try {
+      projects.push({
+        id: index + 1,
+        title: item.fields.title || '',
+        type: item.fields.projectType || 'video-photo',
+        darkOverlay: item.fields.darkOverlay || false,
+        description: item.fields.description 
+          ? documentToReactComponents(item.fields.description, options) 
+          : null,
+        mainPhoto: item.fields.backgroundImage?.fields?.file?.url 
+          ? (item.fields.backgroundImage.fields.file.url.startsWith('http') 
+              ? item.fields.backgroundImage.fields.file.url 
+              : `https:${item.fields.backgroundImage.fields.file.url}`)
+          : '',
+        mainMobilePhoto: item.fields.mobileBgImage?.fields?.file?.url 
+          ? (item.fields.mobileBgImage.fields.file.url.startsWith('http') 
+              ? item.fields.mobileBgImage.fields.file.url 
+              : `https:${item.fields.mobileBgImage.fields.file.url}`)
+          : '',
+        videoUrls: item.fields.vimeoLinks 
+          ? item.fields.vimeoLinks.map(vimeoLink => `${vimeoLink}`) 
+          : [],
+        photoUrls: item.fields.photos 
+          ? item.fields.photos
+              .filter(photo => photo?.fields?.file?.url)
+              .map(photo => 
+                photo.fields.file.url.startsWith('http') 
+                  ? photo.fields.file.url 
+                  : `https:${photo.fields.file.url}`
+              ) 
+          : [],
+        endText1: item.fields.bottomText 
+          ? documentToReactComponents(item.fields.bottomText, options) 
+          : null,
+      });
+    } catch (error) {
+      console.error(`Error transforming project at index ${index}:`, error);
+    }
   });
-});
+
+  return projects;
+};
 // const projects = [
 //   {
 //     id: 1,
@@ -339,5 +372,8 @@ projectData.items.forEach((item, index) => {
 //     description: `The pink dress is an abstract representation of a sensuous feeling, like melancholia – and a personal orientation in the work. This series of self-portraits taken in Melbourne, Australia where I grew up express a sense of disjunction with place – interweaving feelings of loneliness but also wry humour in the existential framing of the pictures. The thematics of identity and belonging is omnipresent in this series that features traditional photographic prints, as well as postcards in which the self-portraits are juxtaposed against stereotypical Australian proverbs. This particular framing revisits the ingrained nationalism within society, and which bodies it excludes. \n\nThe exhibition display of one of the portraits on a public street billboard is an invitation for passersby to view something beautifully strange/out of the ordinary in the everyday context. This vintage-style portrait is taken on a Melbourne tram. This series of work deconstructs notions of gender/sexuality/race and configurations of identification and belonging. From the 'Pink' series represents the disjunction of feeling distant from a place one has always been, and explores ideas of what is 'home' and who belongs – and who does not feel at home.`,
 //   },
 // ];
+
+// Default export - empty array initially, will be populated by components using transformProjectsData
+const projects = [];
 
 export default projects; 

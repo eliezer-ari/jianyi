@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import "./styles/Standard.css";
 // import "./styles/PastProjects.css";
-import projects from "../data/projects";
 import { ArrowLeft, ArrowRight } from 'lucide-react';
 import OptimizedImage from './OptimizedImage';
 
@@ -11,7 +10,7 @@ import PhotoOnlyProject from "./ProjectTypes/PhotoOnlyProject";
 
 const Fire = "https://jianxyi.s3.us-east-1.amazonaws.com/Fire.mp4";
 
-const SelectedWork = ({ setNextSection }) => {
+const SelectedWork = ({ setNextSection, projects = [] }) => {
 	const videoUrl = Fire;
 	const mobileVideoUrl = Fire;
 

@@ -4,7 +4,7 @@ import "./styles/Navbar.css";
 import SelectedWorkModal from "./SelectedWorkModal";
 import Logo from "./images/jianlogo.png";
 
-const Navbar = ({ setActiveSection, activeSection, projectsData }) => {
+const Navbar = ({ setActiveSection, activeSection, projects = [] }) => {
 	const [activeLink, setActiveLink] = useState(null);
 	const [isScrolled, setIsScrolled] = useState(false);
 	const [isSelectedWorkModalOpen, setIsSelectedWorkModalOpen] = useState(false);
@@ -200,7 +200,7 @@ const Navbar = ({ setActiveSection, activeSection, projectsData }) => {
 				isOpen={isSelectedWorkModalOpen} 
 				onClose={handleCloseModal}
 				setActiveSection={setActiveSection}
-				projectsData={projectsData}
+				projects={projects}
 			/>
 		</>
 	);
