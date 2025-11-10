@@ -63,3 +63,4 @@ export const getProjects = async () => {
 //   const queryResult = await client.getEntries(queryOptions)
 //   return queryResult.items[0]
 // }
+

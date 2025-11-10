@@ -67,7 +67,21 @@ export const transformProjectsData = (projectData) => {
       return;
     }
 
+    // Debug: Log available fields for the first item to help diagnose field name issues
+    if (index === 0) {
+      console.log('Available Contentful fields:', Object.keys(item.fields));
+      console.log('audioUrl field value:', item.fields.audioUrl);
+      console.log('soundcloudUrl field value:', item.fields.soundcloudUrl);
+    }
+
     try {
+      // Try multiple possible field names for audio URL
+      const audioUrl = item.fields.audioUrl 
+        || item.fields.soundcloudUrl 
+        || item.fields.soundCloudUrl 
+        || item.fields.audio 
+        || null;
+
       projects.push({
         id: index + 1,
         title: item.fields.title || '',
@@ -98,6 +112,7 @@ export const transformProjectsData = (projectData) => {
                   : `https:${photo.fields.file.url}`
               ) 
           : [],
+        audioUrl: audioUrl,
         endText1: item.fields.bottomText 
           ? documentToReactComponents(item.fields.bottomText, options) 
           : null,

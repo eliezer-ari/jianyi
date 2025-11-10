@@ -14,6 +14,15 @@ const PhotoOnlyProject = ({ project }) => {
 
   const hasPhotos = Array.isArray(project.photoUrls) && project.photoUrls.length > 0;
 
+  // Debug: Log project data to help diagnose audioUrl issue
+  useEffect(() => {
+    console.log('PhotoOnlyProject - project data:', {
+      title: project.title,
+      audioUrl: project.audioUrl,
+      hasAudioUrl: !!project.audioUrl
+    });
+  }, [project]);
+
   // Check for mobile screen size
   useEffect(() => {
     const checkIsMobile = () => {
@@ -160,6 +169,24 @@ const PhotoOnlyProject = ({ project }) => {
               </div>
             ) : null}
           </div>
+
+          {/* SoundCloud audio embed */}
+          {project.audioUrl && (
+            <div className="videos-container" style={{ margin: "24px 0" }}>
+              <div className="video-item">
+                <iframe
+                  width="100%"
+                  height="366"
+                  scrolling="no"
+                  frameBorder="no"
+                  allow="autoplay"
+                  src={project.audioUrl}
+                  title={`${project.title || "Project"} - Audio`}
+                  style={{ borderRadius: 8, boxShadow: "0 2px 16px rgba(0,0,0,0.2)" }}
+                ></iframe>
+              </div>
+            </div>
+          )}
 
           {project.description && (
             <div className="project-description-spc">
