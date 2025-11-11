@@ -99,6 +99,38 @@ const SelectedWork = ({ setNextSection, projects = [] }) => {
 		setSelectedProjectIndex((prev) => (prev + 1) % projects.length);
 	};
 
+	// Early return if projects aren't loaded - show just the background to prevent layout issues
+	if (projects.length === 0) {
+		return (
+			<>
+				<div id="tracking-container" className="standard-container">
+					<div className="back-arrow-container">
+						<button
+							style={{ transform: "rotate(270deg) translateX(-8px)" }}
+							className="arrow-button"
+							onClick={handleBackToHome}
+						>
+							&#x2303;
+						</button>
+					</div>
+					<video
+						ref={desktopVideoRef}
+						src={isMobile ? mobileVideoUrl : videoUrl}
+						autoPlay
+						loop
+						muted
+						playsInline
+						preload="auto"
+						className={isMobile ? "video-background-mobile" : "video-background"}
+					/>
+				</div>
+				<div className="standard-container">
+					{/* Empty - just background video while projects load */}
+				</div>
+			</>
+		);
+	}
+
 	return (
 		<>
 			<div id="tracking-container" className="standard-container">

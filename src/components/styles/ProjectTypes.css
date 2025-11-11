@@ -391,7 +391,7 @@
 }
 
 .project-end-text div p {
-  margin: 0;
+  margin: 0 0 1.5rem 0;
   font-family: var(--font-standard) !important;
   font-size: 1rem;
   text-align: justify;
@@ -399,9 +399,14 @@
   width: 100%;
 }
 
+.project-end-text div p:last-child {
+  margin-bottom: 0;
+}
+
 @media (max-width: 768px) {
   .project-end-text div p {
     font-size: 0.8rem;
+    margin-bottom: 1rem;
   }
 }
 

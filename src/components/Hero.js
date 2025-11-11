@@ -168,33 +168,101 @@ export default function Hero() {
 		const hash = window.location.hash.replace("#", "");
 		let initialSection = "Home";
 		let projectId = null;
+		let needsProjects = false;
 		
 		// Check if hash contains a project slug
 		if (hash.startsWith("project/")) {
-			const slug = hash.replace("project/", "");
-			const project = findProjectBySlug(slug);
-			
-			if (project) {
-				initialSection = "Project";
-				projectId = project.id;
+			needsProjects = true;
+			if (projects.length > 0) {
+				const slug = hash.replace("project/", "");
+				const project = findProjectBySlug(slug);
+				
+				if (project) {
+					initialSection = "Project";
+					projectId = project.id;
+				} else {
+					// Project not found in hash, default to Home
+					initialSection = "Home";
+					window.location.hash = "";
+				}
+			} else {
+				// Projects not loaded yet, wait for them
+				initialSection = "Home";
 			}
 		} else if (hash) {
-			initialSection = hash;
+			// Only use hash if it's a valid section that doesn't need projects
+			const validSections = ["Home", "Bio", "Press", "Contact"];
+			if (validSections.includes(hash)) {
+				initialSection = hash;
+			} else if (hash === "SelectedWork") {
+				needsProjects = true;
+				if (projects.length > 0) {
+					initialSection = hash;
+				} else {
+					initialSection = "Home";
+				}
+			}
 		} else {
-			// Fall back to session storage if no hash
-			initialSection = sessionStorage.getItem("lastActiveSection") || "Home";
-			projectId = sessionStorage.getItem("selectedProjectId") || null;
+			// No hash - check session storage, but be smart about it
+			const lastSection = sessionStorage.getItem("lastActiveSection");
+			
+			// Only restore SelectedWork/Project if projects are loaded
+			if (lastSection === "SelectedWork" || lastSection === "Project") {
+				needsProjects = true;
+				if (projects.length > 0) {
+					initialSection = lastSection;
+					projectId = sessionStorage.getItem("selectedProjectId");
+				} else {
+					// Projects not loaded, default to Home and clear stale sessionStorage
+					initialSection = "Home";
+					sessionStorage.removeItem("lastActiveSection");
+					sessionStorage.removeItem("selectedProjectId");
+				}
+			} else if (lastSection && ["Home", "Bio", "Press", "Contact"].includes(lastSection)) {
+				// Safe to restore these sections without projects
+				initialSection = lastSection;
+			}
+		}
+		
+		// If we need projects but they're not loaded, wait
+		if (needsProjects && projects.length === 0) {
+			return; // This effect will re-run when projects load
 		}
 		
 		// Load the section with project if available
 		if (projectId && (initialSection === "Project" || initialSection === "SelectedWork")) {
-			handleSectionChange(initialSection, projectId);
+			const project = projects.find(p => p.id === parseInt(projectId, 10));
+			if (project) {
+				handleSectionChange(initialSection, projectId);
+			} else {
+				// Project not found, default to Home
+				setActiveSection("Home");
+				setVisibleSection("Home");
+				sessionStorage.removeItem("selectedProjectId");
+				sessionStorage.setItem("lastActiveSection", "Home");
+			}
 		} else {
 			// Set section without project
 			setActiveSection(initialSection);
 			setVisibleSection(initialSection);
 		}
-	}, []);
+	}, [projects.length]); // Re-run when projects load
+
+	// Handle hash-based navigation after projects load (for project/ URLs)
+	// This handles the case where user visits with a project hash but projects weren't loaded yet
+	useEffect(() => {
+		if (projects.length === 0) return;
+		
+		const hash = window.location.hash.replace("#", "");
+		if (hash.startsWith("project/")) {
+			const slug = hash.replace("project/", "");
+			const project = findProjectBySlug(slug);
+			// Only navigate if we're currently on Home (meaning first useEffect couldn't handle it)
+			if (project && visibleSection === "Home") {
+				handleSectionChange("Project", project.id);
+			}
+		}
+	}, [projects.length, visibleSection]); // Run when projects load or section changes
 
 	// Set the actual viewport height on mobile devices
 	function setVhProperty() {
