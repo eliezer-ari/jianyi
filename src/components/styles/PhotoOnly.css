@@ -77,7 +77,21 @@
   }
 }
 
-.project-description-spc p {
-  margin: 0;
+.project-description-spc div p {
+  margin: 0 0 1.5rem 0;
   font-family: var(--font-standard) !important;
+  font-size: 1rem;
+  text-align: justify;
+  line-height: 1.6;
+}
+
+.project-description-spc div p:last-child {
+  margin-bottom: 0;
+}
+
+@media (max-width: 768px) {
+  .project-description-spc div p {
+    font-size: 0.9rem;
+    margin-bottom: 1rem;
+  }
 }

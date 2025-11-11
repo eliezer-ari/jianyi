@@ -1,0 +1,10 @@
+# Cache control for favicon - allow caching but ensure updates work
+/favicon.ico
+  Cache-Control: public, max-age=31536000, immutable
+
+/*.png
+  Cache-Control: public, max-age=31536000, immutable
+
+/manifest.json
+  Cache-Control: public, max-age=86400
+
